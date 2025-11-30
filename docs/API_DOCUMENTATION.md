@@ -536,14 +536,20 @@ Start a new customer session
   "success": true,
   "data": {
     "session_id": "uuid",
+    "session_token": "abc123-1234567890-xyz789",
     "table_number": "A01",
     "package_name": "Gold Buffet",
     "start_time": "2023-11-30T12:00:00Z",
     "time_limit_minutes": 120,
-    "qr_url": "https://restaurant.com/customer/session/uuid"
+    "token_expires_at": "2023-11-30T14:30:00Z",
+    "qr_url": "https://restaurant.com/customer/session/abc123-1234567890-xyz789",
+    "qr_code_image": "data:image/png;base64,iVBORw0KG..."
   }
 }
 ```
+
+> [!IMPORTANT]
+> **QR Code Security**: Each session generates a unique `session_token` that must be printed fresh. Old QR codes cannot be reused to prevent unauthorized ordering.
 
 ### GET /staff/sessions/:id
 Get session details
@@ -662,8 +668,15 @@ Update order status
 
 **No Authentication Required**
 
-### GET /customer/session/:sessionId
-Get session info and available menus
+> [!WARNING]
+> **Session Token Validation**: All customer endpoints validate the `session_token` to ensure:
+> - Token exists and is valid
+> - Session is still active
+> - Token has not expired
+> - Time limit has not been exceeded
+
+### GET /customer/session/:sessionToken
+Get session info and available menus using the unique session token from QR code
 
 **Response:**
 ```json
@@ -709,7 +722,37 @@ Get session info and available menus
 }
 ```
 
-### POST /customer/session/:sessionId/orders
+**Error Responses:**
+```json
+// Invalid or not found token
+{
+  "success": false,
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "ไม่พบรอบการนั่งนี้"
+  }
+}
+
+// Session already closed
+{
+  "success": false,
+  "error": {
+    "code": "SESSION_CLOSED",
+    "message": "รอบการนั่งนี้ถูกปิดแล้ว กรุณาติดต่อพนักงาน"
+  }
+}
+
+// Token expired
+{
+  "success": false,
+  "error": {
+    "code": "TOKEN_EXPIRED",
+    "message": "QR Code หมดอายุแล้ว กรุณาขอ QR Code ใหม่จากพนักงาน"
+  }
+}
+```
+
+### POST /customer/session/:sessionToken/orders
 Place an order
 
 **Request:**
@@ -744,7 +787,19 @@ Place an order
 }
 ```
 
-### GET /customer/session/:sessionId/orders
+**Error Responses:**
+```json
+// Time limit exceeded
+{
+  "success": false,
+  "error": {
+    "code": "TIME_LIMIT_EXCEEDED",
+    "message": "เวลาในการทานหมดแล้ว ไม่สามารถสั่งอาหารเพิ่มได้"
+  }
+}
+```
+
+### GET /customer/session/:sessionToken/orders
 Get order history for session
 
 **Response:**
@@ -770,7 +825,7 @@ Get order history for session
 }
 ```
 
-### POST /customer/session/:sessionId/call-staff
+### POST /customer/session/:sessionToken/call-staff
 Call staff for assistance
 
 **Request:**

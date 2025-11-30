@@ -195,6 +195,8 @@ Customer dining sessions
 | table_id | UUID | FOREIGN KEY → tables(id) | Table |
 | package_id | UUID | FOREIGN KEY → packages(id) | Selected package |
 | created_by_user_id | UUID | FOREIGN KEY → users(id) | Staff who created session |
+| session_token | VARCHAR(255) | UNIQUE | Secure token for QR code access |
+| token_expires_at | TIMESTAMP | | Token expiration time |
 | num_adults | INTEGER | DEFAULT 0 | Number of adults |
 | num_children | INTEGER | DEFAULT 0 | Number of children |
 | start_time | TIMESTAMP | NOT NULL | Session start time |
@@ -204,6 +206,8 @@ Customer dining sessions
 | notes | TEXT | | Additional notes |
 | created_at | TIMESTAMP | DEFAULT NOW() | Creation timestamp |
 | updated_at | TIMESTAMP | DEFAULT NOW() | Last update timestamp |
+
+**Security Note:** `session_token` is generated uniquely for each session to prevent unauthorized access. QR codes must be printed fresh for each dining session.
 
 ---
 
@@ -487,6 +491,8 @@ CREATE TABLE customer_sessions (
     table_id UUID REFERENCES tables(id) ON DELETE CASCADE,
     package_id UUID REFERENCES packages(id) ON DELETE RESTRICT,
     created_by_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    session_token VARCHAR(255) UNIQUE,
+    token_expires_at TIMESTAMP,
     num_adults INTEGER DEFAULT 0,
     num_children INTEGER DEFAULT 0,
     start_time TIMESTAMP NOT NULL,
@@ -617,6 +623,7 @@ CREATE INDEX idx_tables_branch ON tables(branch_id);
 CREATE INDEX idx_tables_status ON tables(status);
 CREATE INDEX idx_sessions_table ON customer_sessions(table_id);
 CREATE INDEX idx_sessions_status ON customer_sessions(status);
+CREATE INDEX idx_sessions_token ON customer_sessions(session_token);
 CREATE INDEX idx_orders_session ON orders(session_id);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_receipts_branch ON receipts(branch_id);
