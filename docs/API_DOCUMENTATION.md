@@ -1066,7 +1066,7 @@ Get member points history
 
 ## 13. Reports
 
-**Role Required:** Admin, Manager
+**Role Required:** Admin
 
 ### GET /reports/sales-summary
 Get sales summary
@@ -1239,27 +1239,181 @@ All endpoints return errors in the following format:
 
 ---
 
+## 15. Waste Tracking
+
+**Role Required:** Staff, Kitchen, Admin
+
+### POST /staff/orders/:orderId/items/:itemId/mark-waste
+Mark food waste for tracking
+
+**Request:**
+```json
+{
+  "waste_quantity": 2,
+  "reason": "customer_leftover",
+  "notes": "ลูกค้าสั่งแต่ไม่ได้กิน"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "order_item_id": "uuid",
+    "menu_item_name": "หมูสามชั้น",
+    "ordered_quantity": 3,
+    "waste_quantity": 2,
+    "waste_percentage": 66.67
+  }
+}
+```
+
+### GET /admin/reports/waste-summary
+Get waste summary report
+
+**Query Parameters:**
+- `date_from`: Start date (YYYY-MM-DD)
+- `date_to`: End date (YYYY-MM-DD)
+- `reason`: Filter by waste reason (optional)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "summary": {
+      "total_waste_items": 450,
+      "total_waste_cost": 12500.00
+    },
+    "by_reason": [
+      {
+        "reason": "customer_leftover",
+        "count": 320,
+        "cost": 8900.00
+      }
+    ],
+    "top_wasted_items": [
+      {
+        "menu_item_id": "uuid",
+        "name": "ซูชิแซลมอน",
+        "total_waste": 120,
+        "total_cost": 3600.00
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 16. Kitchen Printer
+
+**Role Required:** Admin
+
+### POST /admin/printer/test
+Test kitchen printer connection
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "ทดสอบพิมพ์สำเร็จ"
+}
+```
+
+### POST /staff/orders/:orderId/print
+Manually print order to kitchen
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "พิมพ์ใบสั่งสำเร็จ"
+}
+```
+
+---
+
+## 17. Menu Stock Management
+
+**Role Required:** Staff, Kitchen, Admin
+
+### PATCH /staff/menus/:id/toggle-stock
+Quick toggle menu stock status
+
+**Request:**
+```json
+{
+  "is_out_of_stock": true,
+  "reason": "วัตถุดิบหมด",
+  "estimated_available_time": "14:00"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "menu_id": "uuid",
+    "name": "ซูชิแซลมอน",
+    "is_out_of_stock": true,
+    "estimated_available_time": "14:00"
+  }
+}
+```
+
+---
+
 ## WebSocket Events (Real-time Updates)
 
 ### Connection
 ```javascript
-const socket = io('http://localhost:3000', {
+const socket = io('http://localhost:3000/notifications', {
   auth: {
-    token: 'jwt_token'
+    userId: 'user-uuid',
+    userRole: 'Staff'
   }
 });
 ```
 
 ### Events
 
+#### customer:called
+Customer called staff for assistance
+```json
+{
+  "type": "CUSTOMER_CALL",
+  "table_number": "A01",
+  "session_id": "uuid",
+  "reason": "ขอน้ำเพิ่ม",
+  "timestamp": "2023-11-30T12:30:00Z"
+}
+```
+
+#### session:time-warning
+Session time warning (5 minutes before end)
+```json
+{
+  "type": "TIME_WARNING",
+  "table_number": "A01",
+  "session_id": "uuid",
+  "minutes_remaining": 5,
+  "package_name": "Gold Buffet",
+  "timestamp": "2023-11-30T13:55:00Z"
+}
+```
+
 #### order:new
 New order created
 ```json
 {
-  "order_id": "uuid",
-  "session_id": "uuid",
+  "type": "NEW_ORDER",
   "table_number": "A01",
-  "items_count": 3
+  "order_number": "ORD-123",
+  "items_count": 5,
+  "timestamp": "2023-11-30T12:15:00Z"
 }
 ```
 
@@ -1268,8 +1422,10 @@ Order status changed
 ```json
 {
   "order_id": "uuid",
+  "order_number": "ORD-123",
   "old_status": "new",
-  "new_status": "in_progress"
+  "new_status": "in_progress",
+  "timestamp": "2023-11-30T12:16:00Z"
 }
 ```
 
@@ -1284,12 +1440,17 @@ Table status changed
 }
 ```
 
-#### staff:called
-Customer called staff
-```json
-{
-  "session_id": "uuid",
-  "table_number": "A01",
-  "reason": "ขอน้ำเพิ่ม"
-}
-```
+---
+
+## Error Codes
+
+| Code | Message | Description |
+|------|---------|-------------|
+| `NOT_FOUND` | Resource not found | Requested resource doesn't exist |
+| `SESSION_CLOSED` | Session already closed | Cannot perform action on closed session |
+| `TOKEN_EXPIRED` | Token expired | QR code or JWT token has expired |
+| `TIME_LIMIT_EXCEEDED` | Time limit exceeded | Session time has run out |
+| `UNAUTHORIZED` | Unauthorized | Invalid or missing authentication |
+| `FORBIDDEN` | Forbidden | Insufficient permissions |
+| `VALIDATION_ERROR` | Validation failed | Request data validation failed |
+| `PRINTER_ERROR` | Printer connection failed | Cannot connect to kitchen printer |

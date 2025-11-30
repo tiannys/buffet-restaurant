@@ -239,11 +239,10 @@ Grand Total = Subtotal with Service + VAT - Discount - Points Value
 
 | Role | Permissions |
 |------|-------------|
-| **Admin** | Full system access |
+| **Admin** | Full system access + reports |
 | **Staff** | Table & order management |
 | **Cashier** | Billing & receipts |
 | **Kitchen** | View & update order status |
-| **Manager** | Reports & analytics (read-only) |
 
 ## 🌐 API Endpoints
 

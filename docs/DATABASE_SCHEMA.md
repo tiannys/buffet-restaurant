@@ -61,17 +61,16 @@ User role definitions
 | Column | Type | Constraints | Description |
 |--------|------|-------------|-------------|
 | id | SERIAL | PRIMARY KEY | Role ID |
-| name | VARCHAR(50) | UNIQUE NOT NULL | Role name (Admin, Staff, Cashier, Kitchen, Manager) |
+| name | VARCHAR(50) | UNIQUE NOT NULL | Role name (Admin, Staff, Cashier, Kitchen) |
 | description | TEXT | | Role description |
 | permissions | JSONB | | Permission flags |
 | created_at | TIMESTAMP | DEFAULT NOW() | Creation timestamp |
 
 **Default Roles:**
-- Admin: Full system access
+- Admin: Full system access (including reports)
 - Staff: Table & order management
 - Cashier: Billing & receipts
 - Kitchen: Order view & status update
-- Manager: Reports & analytics (read-only)
 
 #### users
 System users (staff members)
@@ -237,8 +236,12 @@ Individual items in an order
 | menu_item_id | UUID | FOREIGN KEY → menu_items(id) | Menu item |
 | quantity | INTEGER | NOT NULL | Quantity ordered |
 | unit_price | DECIMAL(10,2) | DEFAULT 0 | Price per unit (if charged extra) |
+| waste_quantity | INTEGER | DEFAULT 0 | Quantity left uneaten (for waste tracking) |
+| waste_reason | VARCHAR(100) | | Reason for waste (customer_leftover, kitchen_error, expired) |
 | notes | TEXT | | Item-specific notes |
 | created_at | TIMESTAMP | DEFAULT NOW() | Creation timestamp |
+
+**Waste Tracking**: `waste_quantity` and `waste_reason` help track food waste for cost analysis and portion optimization.
 
 ---
 
@@ -341,6 +344,11 @@ System configuration
 - `service_charge_percent`: "10"
 - `loyalty_points_per_baht`: "0.01" (1 point per 100 THB)
 - `loyalty_points_value`: "1" (1 point = 1 THB)
+- `kitchen_printer_enabled`: "true"
+- `kitchen_printer_ip`: "192.168.1.100"
+- `kitchen_printer_port`: "9100"
+- `line_notify_token`: "your-line-notify-token" (optional)
+- `time_warning_minutes`: "5" (notify staff X minutes before session ends)
 
 ---
 
@@ -393,11 +401,10 @@ CREATE TABLE roles (
 
 -- Insert default roles
 INSERT INTO roles (name, description, permissions) VALUES
-('Admin', 'Full system access', '{"all": true}'::jsonb),
+('Admin', 'Full system access including reports', '{"all": true}'::jsonb),
 ('Staff', 'Table and order management', '{"tables": true, "orders": true}'::jsonb),
 ('Cashier', 'Billing and receipts', '{"billing": true, "receipts": true}'::jsonb),
-('Kitchen', 'Order view and status', '{"orders": "read_update"}'::jsonb),
-('Manager', 'Reports and analytics', '{"reports": true}'::jsonb);
+('Kitchen', 'Order view and status', '{"orders": "read_update"}'::jsonb);
 
 -- 3. Users
 CREATE TABLE users (
@@ -523,6 +530,8 @@ CREATE TABLE order_items (
     menu_item_id UUID REFERENCES menu_items(id) ON DELETE RESTRICT,
     quantity INTEGER NOT NULL,
     unit_price DECIMAL(10,2) DEFAULT 0,
+    waste_quantity INTEGER DEFAULT 0,
+    waste_reason VARCHAR(100),
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
