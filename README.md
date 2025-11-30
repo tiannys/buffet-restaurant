@@ -301,20 +301,30 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🚧 Roadmap
 
-- [ ] Mobile apps (iOS/Android)
-- [ ] Line Notify integration
+### Phase 1: Core Operations (Current)
+- [x] QR Code ordering system
+- [x] Package management with inheritance
+- [x] Table & session management
+- [x] Billing with VAT/Service Charge
+- [x] Loyalty program
+
+### Phase 2: Operations Enhancement
+- [ ] Kitchen printer integration
+- [ ] Staff notification system (WebSocket/Line Notify)
+- [ ] Waste tracking & reporting
+- [ ] Menu stock quick toggle
+
+### Phase 3: Customer Experience
+- [ ] Split bill functionality
+- [ ] Table merging for large groups
+- [ ] Customer feedback system
+- [ ] Popular items recommendations
+
+### Phase 4: Advanced Features
 - [ ] Promotion & coupon system
 - [ ] Online table reservation
-- [ ] Inventory management
 - [ ] Multi-language support (EN, CN, JP)
-- [ ] Kitchen Display System (KDS)
-- [ ] Payment gateway integration
-
-## 📞 Support
-
-For issues and questions:
-- Create an issue on GitHub
-- Email: support@example.com
+- [ ] Payment gateway integration (Omise, 2C2P)
 
 ---
 
