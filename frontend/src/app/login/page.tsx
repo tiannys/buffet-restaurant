@@ -31,7 +31,7 @@ export default function LoginPage() {
             window.location.href = '/dashboard';
         } catch (err: any) {
             console.error('Login error:', err);
-            setError(err.response?.data?.message || 'เข้าสู่ระบบไม่สำเร็จ');
+            setError(err.response?.data?.message || 'Loginไม่สำเร็จ');
         } finally {
             setLoading(false);
         }
@@ -43,9 +43,9 @@ export default function LoginPage() {
                 <div className="rounded-lg bg-white p-8 shadow-xl">
                     <div className="mb-8 text-center">
                         <h1 className="text-3xl font-bold text-gray-800">
-                            ระบบจัดการร้านบุฟเฟ่ต์
+                            Buffet Restaurant Management System
                         </h1>
-                        <p className="mt-2 text-gray-600">เข้าสู่ระบบ</p>
+                        <p className="mt-2 text-gray-600">Login</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -57,7 +57,7 @@ export default function LoginPage() {
 
                         <div>
                             <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                                ชื่อผู้ใช้
+                                Username
                             </label>
                             <input
                                 id="username"
@@ -71,7 +71,7 @@ export default function LoginPage() {
 
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                                รหัสผ่าน
+                                Password
                             </label>
                             <input
                                 id="password"
@@ -88,7 +88,7 @@ export default function LoginPage() {
                             disabled={loading}
                             className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400"
                         >
-                            {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+                            {loading ? 'กำลังLogin...' : 'Login'}
                         </button>
                     </form>
 

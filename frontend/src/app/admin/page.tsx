@@ -57,7 +57,7 @@ export default function AdminDashboard() {
     if (!user) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="text-xl">กำลังโหลด...</div>
+                <div className="text-xl">Loading...</div>
             </div>
         );
     }
@@ -68,7 +68,7 @@ export default function AdminDashboard() {
             <header className="bg-white shadow">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                     <h1 className="text-2xl font-bold text-gray-900">
-                        ระบบจัดการ - Admin Dashboard
+                        ระบบActions - Admin Dashboard
                     </h1>
                     <div className="flex items-center gap-4">
                         <span className="text-gray-700">{user.full_name}</span>
@@ -76,7 +76,7 @@ export default function AdminDashboard() {
                             onClick={handleLogout}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                         >
-                            ออกจากระบบ
+                            Logout
                         </button>
                     </div>
                 </div>
@@ -91,15 +91,15 @@ export default function AdminDashboard() {
                         <div className="text-3xl font-bold text-blue-600 mt-2">{stats.totalUsers}</div>
                     </div>
                     <div className="bg-white rounded-lg shadow p-6">
-                        <div className="text-sm text-gray-600">โต๊ะทั้งหมด</div>
+                        <div className="text-sm text-gray-600">Total Tables</div>
                         <div className="text-3xl font-bold text-green-600 mt-2">{stats.totalTables}</div>
                     </div>
                     <div className="bg-white rounded-lg shadow p-6">
-                        <div className="text-sm text-gray-600">แพ็คเกจ</div>
+                        <div className="text-sm text-gray-600">Packages</div>
                         <div className="text-3xl font-bold text-purple-600 mt-2">{stats.totalPackages}</div>
                     </div>
                     <div className="bg-white rounded-lg shadow p-6">
-                        <div className="text-sm text-gray-600">เมนูอาหาร</div>
+                        <div className="text-sm text-gray-600">Menu Items</div>
                         <div className="text-3xl font-bold text-orange-600 mt-2">{stats.totalMenuItems}</div>
                     </div>
                 </div>
@@ -107,47 +107,47 @@ export default function AdminDashboard() {
                 {/* Management Sections */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div className="bg-white rounded-lg shadow p-6">
-                        <h2 className="text-xl font-bold mb-4">จัดการผู้ใช้งาน</h2>
-                        <p className="text-gray-600 mb-4">จัดการบัญชีผู้ใช้และสิทธิ์การเข้าถึง</p>
+                        <h2 className="text-xl font-bold mb-4">User Management</h2>
+                        <p className="text-gray-600 mb-4">Manage user accounts and permissionsการเข้าถึง</p>
                         <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            จัดการผู้ใช้
+                            Actionsผู้ใช้
                         </button>
                     </div>
 
                     <div className="bg-white rounded-lg shadow p-6">
-                        <h2 className="text-xl font-bold mb-4">จัดการเมนู</h2>
-                        <p className="text-gray-600 mb-4">เพิ่ม แก้ไข ลบเมนูอาหาร</p>
+                        <h2 className="text-xl font-bold mb-4">Menu Management</h2>
+                        <p className="text-gray-600 mb-4">Add, edit, delete menu items</p>
                         <button className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                            จัดการเมนู
+                            Menu Management
                         </button>
                     </div>
 
                     <div className="bg-white rounded-lg shadow p-6">
-                        <h2 className="text-xl font-bold mb-4">จัดการแพ็คเกจ</h2>
-                        <p className="text-gray-600 mb-4">จัดการแพ็คเกจบุฟเฟ่ต์</p>
+                        <h2 className="text-xl font-bold mb-4">Package Management</h2>
+                        <p className="text-gray-600 mb-4">Manage buffet packages</p>
                         <button className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
-                            จัดการแพ็คเกจ
+                            Package Management
                         </button>
                     </div>
 
                     <div className="bg-white rounded-lg shadow p-6">
-                        <h2 className="text-xl font-bold mb-4">จัดการโต๊ะ</h2>
-                        <p className="text-gray-600 mb-4">เพิ่ม แก้ไข ลบโต๊ะ</p>
+                        <h2 className="text-xl font-bold mb-4">Table Management</h2>
+                        <p className="text-gray-600 mb-4">Add, edit, delete tables</p>
                         <button className="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
-                            จัดการโต๊ะ
+                            Table Management
                         </button>
                     </div>
 
                     <div className="bg-white rounded-lg shadow p-6">
-                        <h2 className="text-xl font-bold mb-4">รายงาน</h2>
-                        <p className="text-gray-600 mb-4">ดูรายงานยอดขายและสถิติ</p>
+                        <h2 className="text-xl font-bold mb-4">Reports</h2>
+                        <p className="text-gray-600 mb-4">View sales reports and statistics</p>
                         <button className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                            ดูรายงาน
+                            View Reports
                         </button>
                     </div>
 
                     <div className="bg-white rounded-lg shadow p-6">
-                        <h2 className="text-xl font-bold mb-4">ตั้งค่าระบบ</h2>
+                        <h2 className="text-xl font-bold mb-4">System Settings</h2>
                         <p className="text-gray-600 mb-4">ตั้งค่า VAT, Service Charge, Points</p>
                         <button className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
                             ตั้งค่า

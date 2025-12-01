@@ -63,7 +63,7 @@ export default function UserManagement({ onClose }: UserManagementProps) {
             setUserList(response.data);
         } catch (error) {
             console.error('Failed to load users:', error);
-            alert('ไม่สามารถโหลดข้อมูลผู้ใช้ได้');
+            alert('Failed to load users');
         } finally {
             setLoading(false);
         }
@@ -94,15 +94,15 @@ export default function UserManagement({ onClose }: UserManagementProps) {
     };
 
     const handleDelete = async (user: User) => {
-        if (!confirm(`ต้องการลบผู้ใช้ "${user.full_name}" ใช่หรือไม่?`)) return;
+        if (!confirm(`Are you sure you want to delete user "${user.full_name}" ?`)) return;
 
         try {
             await users.delete(user.id);
-            alert('ลบผู้ใช้สำเร็จ');
+            alert('User deleted successfully');
             loadUsers();
         } catch (error) {
             console.error('Failed to delete user:', error);
-            alert('ไม่สามารถลบผู้ใช้ได้');
+            alert('Failed to delete user');
         }
     };
 
@@ -112,40 +112,40 @@ export default function UserManagement({ onClose }: UserManagementProps) {
         try {
             if (editingUser) {
                 await users.update(editingUser.id, formData);
-                alert('อัพเดทผู้ใช้สำเร็จ');
+                alert('User updated successfully');
             } else {
                 await users.create(formData);
-                alert('เพิ่มผู้ใช้สำเร็จ');
+                alert('User created successfully');
             }
             setShowModal(false);
             loadUsers();
         } catch (error: any) {
             console.error('Failed to save user:', error);
-            alert(error.response?.data?.message || 'ไม่สามารถบันทึกข้อมูลได้');
+            alert(error.response?.data?.message || 'Failed to save user');
         }
     };
 
     if (loading) {
-        return <div className="text-center py-8">กำลังโหลด...</div>;
+        return <div className="text-center py-8">Loading...</div>;
     }
 
     return (
         <div className="space-y-6">
             {/* Header */}
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">จัดการผู้ใช้งาน</h2>
+                <h2 className="text-2xl font-bold">User Management</h2>
                 <div className="flex gap-2">
                     <button
                         onClick={handleAdd}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                     >
-                        + เพิ่มผู้ใช้
+                        + Add User
                     </button>
                     <button
                         onClick={onClose}
                         className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
                     >
-                        ปิด
+                        Close
                     </button>
                 </div>
             </div>
@@ -156,16 +156,16 @@ export default function UserManagement({ onClose }: UserManagementProps) {
                     <thead className="bg-gray-50">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                ชื่อผู้ใช้
+                                Username
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                ชื่อ-นามสกุล
+                                Full Name
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                บทบาท
+                                Role
                             </th>
                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                                จัดการ
+                                Actions
                             </th>
                         </tr>
                     </thead>
@@ -192,13 +192,13 @@ export default function UserManagement({ onClose }: UserManagementProps) {
                                         onClick={() => handleEdit(user)}
                                         className="text-indigo-600 hover:text-indigo-900 mr-4"
                                     >
-                                        แก้ไข
+                                        Edit
                                     </button>
                                     <button
                                         onClick={() => handleDelete(user)}
                                         className="text-red-600 hover:text-red-900"
                                     >
-                                        ลบ
+                                        Delete
                                     </button>
                                 </td>
                             </tr>
@@ -211,11 +211,11 @@ export default function UserManagement({ onClose }: UserManagementProps) {
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                title={editingUser ? 'แก้ไขผู้ใช้' : 'เพิ่มผู้ใช้'}
+                title={editingUser ? 'Edit User' : 'Add User'}
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">ชื่อผู้ใช้</label>
+                        <label className="block text-sm font-medium text-gray-700">Username</label>
                         <input
                             type="text"
                             value={formData.username}
@@ -228,7 +228,7 @@ export default function UserManagement({ onClose }: UserManagementProps) {
 
                     {!editingUser && (
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">รหัสผ่าน</label>
+                            <label className="block text-sm font-medium text-gray-700">Password</label>
                             <input
                                 type="password"
                                 value={formData.password}
@@ -240,7 +240,7 @@ export default function UserManagement({ onClose }: UserManagementProps) {
                     )}
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">ชื่อ-นามสกุล</label>
+                        <label className="block text-sm font-medium text-gray-700">Full Name</label>
                         <input
                             type="text"
                             value={formData.full_name}
@@ -251,14 +251,14 @@ export default function UserManagement({ onClose }: UserManagementProps) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">บทบาท</label>
+                        <label className="block text-sm font-medium text-gray-700">Role</label>
                         <select
                             value={formData.role_id}
                             onChange={(e) => setFormData({ ...formData, role_id: e.target.value })}
                             required
                             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
                         >
-                            <option value="">เลือกบทบาท</option>
+                            <option value="">Select Role</option>
                             {roles.map((role) => (
                                 <option key={role.id} value={role.id}>
                                     {role.name}
@@ -268,14 +268,14 @@ export default function UserManagement({ onClose }: UserManagementProps) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">สาขา</label>
+                        <label className="block text-sm font-medium text-gray-700">Branch</label>
                         <select
                             value={formData.branch_id}
                             onChange={(e) => setFormData({ ...formData, branch_id: e.target.value })}
                             required
                             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
                         >
-                            <option value="">เลือกสาขา</option>
+                            <option value="">Select Branch</option>
                             {branches.map((branch) => (
                                 <option key={branch.id} value={branch.id}>
                                     {branch.name}
@@ -290,13 +290,13 @@ export default function UserManagement({ onClose }: UserManagementProps) {
                             onClick={() => setShowModal(false)}
                             className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
                         >
-                            ยกเลิก
+                            Cancel
                         </button>
                         <button
                             type="submit"
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                         >
-                            {editingUser ? 'บันทึก' : 'เพิ่ม'}
+                            {editingUser ? 'Save' : 'Add'}
                         </button>
                     </div>
                 </form>

@@ -114,7 +114,7 @@ export default function DashboardPage() {
     if (loading || !user) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="text-xl">กำลังโหลด...</div>
+                <div className="text-xl">Loading...</div>
             </div>
         );
     }
@@ -128,9 +128,9 @@ export default function DashboardPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">
-                            ระบบจัดการร้านบุฟเฟ่ต์
+                            Buffet Restaurant Management System
                         </h1>
-                        <p className="text-sm text-gray-600">บทบาท: {roleName}</p>
+                        <p className="text-sm text-gray-600">Role: {roleName}</p>
                     </div>
                     <div className="flex items-center gap-4">
                         <span className="text-gray-700">{user.full_name}</span>
@@ -138,7 +138,7 @@ export default function DashboardPage() {
                             onClick={handleLogout}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                         >
-                            ออกจากระบบ
+                            Logout
                         </button>
                     </div>
                 </div>
@@ -186,15 +186,15 @@ function AdminDashboard({ stats, onShowUserManagement }: any) {
                     <div className="text-3xl font-bold text-blue-600 mt-2">{stats.totalUsers}</div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
-                    <div className="text-sm text-gray-600">โต๊ะทั้งหมด</div>
+                    <div className="text-sm text-gray-600">Total Tables</div>
                     <div className="text-3xl font-bold text-green-600 mt-2">{stats.totalTables}</div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
-                    <div className="text-sm text-gray-600">แพ็คเกจ</div>
+                    <div className="text-sm text-gray-600">Packages</div>
                     <div className="text-3xl font-bold text-purple-600 mt-2">{stats.totalPackages}</div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
-                    <div className="text-sm text-gray-600">เมนูอาหาร</div>
+                    <div className="text-sm text-gray-600">Menu Items</div>
                     <div className="text-3xl font-bold text-orange-600 mt-2">{stats.totalMenuItems}</div>
                 </div>
             </div>
@@ -202,45 +202,45 @@ function AdminDashboard({ stats, onShowUserManagement }: any) {
             {/* Management Sections */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-bold mb-2">จัดการผู้ใช้งาน</h3>
-                    <p className="text-gray-600 text-sm mb-4">จัดการบัญชีผู้ใช้และสิทธิ์</p>
+                    <h3 className="text-lg font-bold mb-2">User Management</h3>
+                    <p className="text-gray-600 text-sm mb-4">Manage user accounts and permissions</p>
                     <button
                         onClick={onShowUserManagement}
                         className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                     >
-                        จัดการผู้ใช้
+                        Actionsผู้ใช้
                     </button>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-bold mb-2">จัดการเมนู</h3>
-                    <p className="text-gray-600 text-sm mb-4">เพิ่ม แก้ไข ลบเมนูอาหาร</p>
+                    <h3 className="text-lg font-bold mb-2">Menu Management</h3>
+                    <p className="text-gray-600 text-sm mb-4">Add, edit, delete menu items</p>
                     <button className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                        จัดการเมนู
+                        Menu Management
                     </button>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-bold mb-2">จัดการแพ็คเกจ</h3>
-                    <p className="text-gray-600 text-sm mb-4">จัดการแพ็คเกจบุฟเฟ่ต์</p>
+                    <h3 className="text-lg font-bold mb-2">Package Management</h3>
+                    <p className="text-gray-600 text-sm mb-4">Manage buffet packages</p>
                     <button className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
-                        จัดการแพ็คเกจ
+                        Package Management
                     </button>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-bold mb-2">จัดการโต๊ะ</h3>
-                    <p className="text-gray-600 text-sm mb-4">เพิ่ม แก้ไข ลบโต๊ะ</p>
+                    <h3 className="text-lg font-bold mb-2">Table Management</h3>
+                    <p className="text-gray-600 text-sm mb-4">Add, edit, delete tables</p>
                     <button className="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
-                        จัดการโต๊ะ
+                        Table Management
                     </button>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-bold mb-2">รายงาน</h3>
-                    <p className="text-gray-600 text-sm mb-4">ดูรายงานยอดขายและสถิติ</p>
+                    <h3 className="text-lg font-bold mb-2">Reports</h3>
+                    <p className="text-gray-600 text-sm mb-4">View sales reports and statistics</p>
                     <button className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                        ดูรายงาน
+                        View Reports
                     </button>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-bold mb-2">ตั้งค่าระบบ</h3>
+                    <h3 className="text-lg font-bold mb-2">System Settings</h3>
                     <p className="text-gray-600 text-sm mb-4">ตั้งค่า VAT, Service Charge</p>
                     <button className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
                         ตั้งค่า
@@ -254,18 +254,18 @@ function AdminDashboard({ stats, onShowUserManagement }: any) {
 // Staff Dashboard Component
 function StaffDashboard({ dashboard }: any) {
     if (!dashboard) {
-        return <div>กำลังโหลดข้อมูลโต๊ะ...</div>;
+        return <div>Loading tables...</div>;
     }
 
     return (
         <div>
-            <h2 className="text-xl font-bold mb-6">แดชบอร์ดโต๊ะ</h2>
+            <h2 className="text-xl font-bold mb-6">Table Dashboard</h2>
 
             {/* Summary */}
             <div className="grid grid-cols-4 gap-4 mb-6">
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="text-2xl font-bold">{dashboard.summary?.total || 0}</div>
-                    <div className="text-sm text-gray-600">โต๊ะทั้งหมด</div>
+                    <div className="text-sm text-gray-600">Total Tables</div>
                 </div>
                 <div className="bg-green-50 rounded-lg shadow p-4">
                     <div className="text-2xl font-bold text-green-600">{dashboard.summary?.available || 0}</div>
@@ -293,7 +293,7 @@ function StaffDashboard({ dashboard }: any) {
                                 : 'bg-gray-100 border-2 border-gray-300'
                             }`}
                     >
-                        <div className="text-2xl font-bold">โต๊ะ {table.table_number}</div>
+                        <div className="text-2xl font-bold">Table {table.table_number}</div>
                         <div className="text-sm text-gray-600 mt-2">{table.zone}</div>
                         <div className="text-sm font-medium mt-2">
                             {table.status === 'available' && <span className="text-green-700">ว่าง</span>}
@@ -302,7 +302,7 @@ function StaffDashboard({ dashboard }: any) {
                         </div>
                         {table.status === 'available' && (
                             <button className="mt-4 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                                เริ่มรอบโต๊ะ
+                                Start Session
                             </button>
                         )}
                     </div>
@@ -331,7 +331,7 @@ function CashierDashboard({ sessions, selectedSession, setSelectedSession, billC
             <div className="grid grid-cols-2 gap-6">
                 {/* Active Sessions */}
                 <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-bold mb-4">โต๊ะที่มีลูกค้า</h3>
+                    <h3 className="text-lg font-bold mb-4">Active Tables</h3>
                     <div className="space-y-2">
                         {sessions.map((session: any) => (
                             <button
@@ -340,7 +340,7 @@ function CashierDashboard({ sessions, selectedSession, setSelectedSession, billC
                                 className={`w-full text-left p-4 rounded-lg border hover:bg-blue-50 ${selectedSession?.id === session.id ? 'border-blue-500 bg-blue-50' : ''
                                     }`}
                             >
-                                <div className="font-medium">โต๊ะ {session.table?.table_number}</div>
+                                <div className="font-medium">Table {session.table?.table_number}</div>
                                 <div className="text-sm text-gray-600">{session.package?.name}</div>
                                 <div className="text-sm text-gray-600">
                                     ผู้ใหญ่ {session.adult_count} / เด็ก {session.child_count}
@@ -390,7 +390,7 @@ function CashierDashboard({ sessions, selectedSession, setSelectedSession, billC
                             </button>
                         </div>
                     ) : (
-                        <p className="text-gray-600">เลือกโต๊ะเพื่อคำนวณบิล</p>
+                        <p className="text-gray-600">Select a table to calculate bill</p>
                     )}
                 </div>
             </div>
@@ -418,7 +418,7 @@ function KitchenDashboard({ orders, onReload }: any) {
                     <div key={order.id} className="bg-white rounded-lg shadow p-6">
                         <div className="flex justify-between items-start mb-4">
                             <div>
-                                <div className="text-lg font-bold">โต๊ะ {order.session?.table?.table_number}</div>
+                                <div className="text-lg font-bold">Table {order.session?.table?.table_number}</div>
                                 <div className="text-sm text-gray-600">
                                     {new Date(order.created_at).toLocaleTimeString('th-TH')}
                                 </div>
