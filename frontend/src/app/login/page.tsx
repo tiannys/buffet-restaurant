@@ -18,30 +18,42 @@ export default function LoginPage() {
 
         try {
             const response = await auth.login(username, password);
+            console.log('Login response:', response.data);
+
             const { access_token, user } = response.data;
+            console.log('User:', user);
+            console.log('User role:', user.role);
 
             localStorage.setItem('token', access_token);
             localStorage.setItem('user', JSON.stringify(user));
 
             // Redirect based on role
             const roleName = user.role?.name || user.role;
+            console.log('Role name:', roleName);
+
             switch (roleName) {
                 case 'Admin':
+                    console.log('Redirecting to /admin');
                     router.push('/admin');
                     break;
                 case 'Staff':
+                    console.log('Redirecting to /staff');
                     router.push('/staff');
                     break;
                 case 'Cashier':
+                    console.log('Redirecting to /cashier');
                     router.push('/cashier');
                     break;
                 case 'Kitchen':
+                    console.log('Redirecting to /kitchen');
                     router.push('/kitchen');
                     break;
                 default:
+                    console.log('Redirecting to /staff (default)');
                     router.push('/staff');
             }
         } catch (err: any) {
+            console.error('Login error:', err);
             setError(err.response?.data?.message || 'เข้าสู่ระบบไม่สำเร็จ');
         } finally {
             setLoading(false);
