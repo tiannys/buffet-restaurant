@@ -18,6 +18,8 @@ interface UserManagementProps {
 
 export default function UserManagement({ onClose }: UserManagementProps) {
     const [userList, setUserList] = useState<User[]>([]);
+    const [roles, setRoles] = useState<any[]>([]);
+    const [branches, setBranches] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -31,7 +33,39 @@ export default function UserManagement({ onClose }: UserManagementProps) {
 
     useEffect(() => {
         loadUsers();
+        loadRoles();
+        loadBranches();
     }, []);
+
+    const loadRoles = async () => {
+        try {
+            const response = await users.getAll(); // We'll use a roles endpoint later
+            // For now, extract unique roles from users
+            const uniqueRoles = Array.from(new Set(response.data.map((u: any) => u.role?.id).filter(Boolean)));
+            // Temporary: create role objects
+            setRoles([
+                { id: '1', name: 'Admin' },
+                { id: '2', name: 'Staff' },
+                { id: '3', name: 'Cashier' },
+                { id: '4', name: 'Kitchen' },
+            ]);
+        } catch (error) {
+            console.error('Failed to load roles:', error);
+        }
+    };
+
+    const loadBranches = async () => {
+        try {
+            // Get first user's branch for now
+            const response = await users.getAll();
+            if (response.data.length > 0) {
+                const branchId = response.data[0].branch_id;
+                setBranches([{ id: branchId, name: 'สาขาหลัก' }]);
+            }
+        } catch (error) {
+            console.error('Failed to load branches:', error);
+        }
+    };
 
     const loadUsers = async () => {
         try {
@@ -51,8 +85,8 @@ export default function UserManagement({ onClose }: UserManagementProps) {
             username: '',
             password: '',
             full_name: '',
-            role_id: '',
-            branch_id: '',
+            role_id: roles.length > 0 ? roles[0].id : '',
+            branch_id: branches.length > 0 ? branches[0].id : '',
         });
         setShowModal(true);
     };
@@ -63,7 +97,7 @@ export default function UserManagement({ onClose }: UserManagementProps) {
             username: user.username,
             password: '',
             full_name: user.full_name,
-            role_id: user.role?.id || '',
+            role_id: typeof user.role === 'object' ? user.role?.id : '',
             branch_id: user.branch_id,
         });
         setShowModal(true);
@@ -156,9 +190,9 @@ export default function UserManagement({ onClose }: UserManagementProps) {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role?.name === 'Admin' ? 'bg-purple-100 text-purple-800' :
-                                            user.role?.name === 'Staff' ? 'bg-blue-100 text-blue-800' :
-                                                user.role?.name === 'Cashier' ? 'bg-green-100 text-green-800' :
-                                                    'bg-gray-100 text-gray-800'
+                                        user.role?.name === 'Staff' ? 'bg-blue-100 text-blue-800' :
+                                            user.role?.name === 'Cashier' ? 'bg-green-100 text-green-800' :
+                                                'bg-gray-100 text-gray-800'
                                         }`}>
                                         {user.role?.name || user.role}
                                     </span>
@@ -224,6 +258,40 @@ export default function UserManagement({ onClose }: UserManagementProps) {
                             required
                             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
                         />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">บทบาท</label>
+                        <select
+                            value={formData.role_id}
+                            onChange={(e) => setFormData({ ...formData, role_id: e.target.value })}
+                            required
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                        >
+                            <option value="">เลือกบทบาท</option>
+                            {roles.map((role) => (
+                                <option key={role.id} value={role.id}>
+                                    {role.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">สาขา</label>
+                        <select
+                            value={formData.branch_id}
+                            onChange={(e) => setFormData({ ...formData, branch_id: e.target.value })}
+                            required
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                        >
+                            <option value="">เลือกสาขา</option>
+                            {branches.map((branch) => (
+                                <option key={branch.id} value={branch.id}>
+                                    {branch.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="flex gap-4 justify-end pt-4">
