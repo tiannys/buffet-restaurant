@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MenuItem } from '../database/entities/menu-item.entity';
 import { MenuCategory } from '../database/entities/menu-category.entity';
+import { PackageMenu } from '../database/entities/package-menu.entity';
 
 @Injectable()
 export class MenusService {
@@ -11,6 +12,8 @@ export class MenusService {
         private menuItemsRepository: Repository<MenuItem>,
         @InjectRepository(MenuCategory)
         private categoriesRepository: Repository<MenuCategory>,
+        @InjectRepository(PackageMenu)
+        private packageMenusRepository: Repository<PackageMenu>,
     ) { }
 
     // Menu Items
@@ -26,13 +29,27 @@ export class MenusService {
     async findOneMenu(id: string) {
         return this.menuItemsRepository.findOne({
             where: { id },
-            relations: ['category', 'branch'],
+            relations: ['category', 'branch', 'package_menus', 'package_menus.package'],
         });
     }
 
     async createMenu(menuData: any) {
-        const menu = this.menuItemsRepository.create(menuData);
-        return this.menuItemsRepository.save(menu);
+        const { package_id, ...menuFields } = menuData;
+
+        // Create menu item
+        const menu = this.menuItemsRepository.create(menuFields);
+        const savedMenu = await this.menuItemsRepository.save(menu);
+
+        // Create package-menu relationship if package_id provided
+        if (package_id) {
+            const packageMenu = this.packageMenusRepository.create({
+                package_id,
+                menu_item_id: savedMenu.id,
+            });
+            await this.packageMenusRepository.save(packageMenu);
+        }
+
+        return this.findOneMenu(savedMenu.id);
     }
 
     async updateMenu(id: string, menuData: any) {

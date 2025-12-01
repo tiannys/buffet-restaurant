@@ -71,6 +71,16 @@ export const menus = {
     update: (id: string, data: any) => apiClient.put(`/menus/${id}`, data),
     delete: (id: string) => apiClient.delete(`/menus/${id}`),
     toggleAvailability: (id: string) => apiClient.patch(`/menus/${id}/toggle-availability`),
+    uploadImage: (file: File) => {
+        const formData = new FormData();
+        formData.append('image', file);
+        return apiClient.post('/menus/upload-image', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+    },
+    createCategory: (data: any) => apiClient.post('/menus/categories', data),
+    updateCategory: (id: string, data: any) => apiClient.put(`/menus/categories/${id}`, data),
+    deleteCategory: (id: string) => apiClient.delete(`/menus/categories/${id}`),
 };
 
 export const tables = {
