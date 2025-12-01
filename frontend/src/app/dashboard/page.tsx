@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { tables, sessions, billing, loyalty, orders } from '@/lib/api';
+import UserManagement from '@/components/UserManagement';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -27,6 +28,9 @@ export default function DashboardPage() {
 
     // Kitchen data
     const [pendingOrders, setPendingOrders] = useState<any[]>([]);
+
+    // Management modals
+    const [showUserManagement, setShowUserManagement] = useState(false);
 
     useEffect(() => {
         // Check authentication
@@ -142,7 +146,7 @@ export default function DashboardPage() {
 
             {/* Main Content */}
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {roleName === 'Admin' && <AdminDashboard stats={adminStats} />}
+                {roleName === 'Admin' && <AdminDashboard stats={adminStats} onShowUserManagement={() => setShowUserManagement(true)} />}
                 {roleName === 'Staff' && <StaffDashboard dashboard={tableDashboard} />}
                 {roleName === 'Cashier' && (
                     <CashierDashboard
@@ -156,12 +160,21 @@ export default function DashboardPage() {
                 )}
                 {roleName === 'Kitchen' && <KitchenDashboard orders={pendingOrders} onReload={loadKitchenData} />}
             </main>
+
+            {/* Management Modals */}
+            {showUserManagement && (
+                <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-auto">
+                        <UserManagement onClose={() => setShowUserManagement(false)} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
 // Admin Dashboard Component
-function AdminDashboard({ stats }: any) {
+function AdminDashboard({ stats, onShowUserManagement }: any) {
     return (
         <div>
             <h2 className="text-xl font-bold mb-6">แดชบอร์ดผู้ดูแลระบบ</h2>
@@ -191,7 +204,10 @@ function AdminDashboard({ stats }: any) {
                 <div className="bg-white rounded-lg shadow p-6">
                     <h3 className="text-lg font-bold mb-2">จัดการผู้ใช้งาน</h3>
                     <p className="text-gray-600 text-sm mb-4">จัดการบัญชีผู้ใช้และสิทธิ์</p>
-                    <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <button
+                        onClick={onShowUserManagement}
+                        className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
                         จัดการผู้ใช้
                     </button>
                 </div>
@@ -271,10 +287,10 @@ function StaffDashboard({ dashboard }: any) {
                     <div
                         key={table.id}
                         className={`rounded-lg p-6 shadow-lg text-center ${table.status === 'available'
-                                ? 'bg-green-100 border-2 border-green-300'
-                                : table.status === 'occupied'
-                                    ? 'bg-blue-100 border-2 border-blue-300'
-                                    : 'bg-gray-100 border-2 border-gray-300'
+                            ? 'bg-green-100 border-2 border-green-300'
+                            : table.status === 'occupied'
+                                ? 'bg-blue-100 border-2 border-blue-300'
+                                : 'bg-gray-100 border-2 border-gray-300'
                             }`}
                     >
                         <div className="text-2xl font-bold">โต๊ะ {table.table_number}</div>
@@ -408,8 +424,8 @@ function KitchenDashboard({ orders, onReload }: any) {
                                 </div>
                             </div>
                             <span className={`px-3 py-1 rounded-full text-sm ${order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                    order.status === 'preparing' ? 'bg-blue-100 text-blue-800' :
-                                        'bg-green-100 text-green-800'
+                                order.status === 'preparing' ? 'bg-blue-100 text-blue-800' :
+                                    'bg-green-100 text-green-800'
                                 }`}>
                                 {order.status === 'pending' ? 'รอทำ' :
                                     order.status === 'preparing' ? 'กำลังทำ' : 'เสร็จแล้ว'}

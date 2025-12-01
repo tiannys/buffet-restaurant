@@ -41,6 +41,14 @@ export const auth = {
     logout: () => apiClient.post('/auth/logout'),
 };
 
+export const users = {
+    getAll: () => apiClient.get('/users'),
+    getOne: (id: string) => apiClient.get(`/users/${id}`),
+    create: (data: any) => apiClient.post('/users', data),
+    update: (id: string, data: any) => apiClient.put(`/users/${id}`, data),
+    delete: (id: string) => apiClient.delete(`/users/${id}`),
+};
+
 export const packages = {
     getAll: () => apiClient.get('/packages'),
     getOne: (id: string) => apiClient.get(`/packages/${id}`),
