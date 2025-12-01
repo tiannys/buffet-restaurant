@@ -18,17 +18,40 @@ import { UploadsModule } from './uploads/uploads.module';
     imports: [
         // Configuration
         ConfigModule.forRoot({
-            UsersModule,
-            PackagesModule,
-            MenusModule,
-            TablesModule,
-            SessionsModule,
-            OrdersModule,
-            BillingModule,
-            LoyaltyModule,
-            ReportsModule,
-            SettingsModule,
-            UploadsModule,
+            isGlobal: true,
+            envFilePath: '.env',
+        }),
+
+        // Database
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => ({
+                type: 'postgres',
+                host: configService.get('DB_HOST'),
+                port: configService.get('DB_PORT'),
+                username: configService.get('DB_USERNAME'),
+                password: configService.get('DB_PASSWORD'),
+                database: configService.get('DB_DATABASE'),
+                entities: [__dirname + '/**/*.entity{.ts,.js}'], // Support both .ts and .js
+                synchronize: true, // Auto-create tables (set to false in production after first run)
+                logging: configService.get('NODE_ENV') === 'development',
+            }),
+        }),
+
+        // Feature modules
+        AuthModule,
+        UsersModule,
+        PackagesModule,
+        MenusModule,
+        TablesModule,
+        SessionsModule,
+        OrdersModule,
+        BillingModule,
+        LoyaltyModule,
+        ReportsModule,
+        SettingsModule,
+        UploadsModule,
     ],
 })
 export class AppModule { }
