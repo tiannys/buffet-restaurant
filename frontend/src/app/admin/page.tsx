@@ -25,8 +25,9 @@ export default function AdminDashboard() {
 
         const userData = JSON.parse(userStr);
 
-        // Check if user is Admin
-        if (userData.role?.name !== 'Admin') {
+        // Check if user is Admin (support both string and object format)
+        const roleName = userData.role?.name || userData.role;
+        if (roleName !== 'Admin') {
             alert('คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
             router.push('/login');
             return;
