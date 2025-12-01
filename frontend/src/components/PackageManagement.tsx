@@ -3,7 +3,11 @@
 import { useState, useEffect } from 'react';
 import { packages } from '@/lib/api';
 
-export default function PackageManagement() {
+interface PackageManagementProps {
+    onClose: () => void;
+}
+
+export default function PackageManagement({ onClose }: PackageManagementProps) {
     const [packageList, setPackageList] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -120,12 +124,20 @@ export default function PackageManagement() {
         <div className="p-6">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">Package Management</h2>
-                <button
-                    onClick={handleAddNew}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                    Add Package
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={handleAddNew}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                        Add Package
+                    </button>
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                    >
+                        Close
+                    </button>
+                </div>
             </div>
 
             {/* Package List */}
@@ -152,8 +164,8 @@ export default function PackageManagement() {
                                     <button
                                         onClick={() => handleToggleActive(pkg)}
                                         className={`px-3 py-1 rounded-full text-xs font-semibold ${pkg.is_active
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-red-100 text-red-800'
                                             }`}
                                     >
                                         {pkg.is_active ? 'Active' : 'Inactive'}
