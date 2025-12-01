@@ -36,20 +36,16 @@ export class MenusService {
     async createMenu(menuData: any) {
         const { package_id, ...menuFields } = menuData;
 
-        // Create and save menu item
-        const menu = this.menuItemsRepository.create(menuFields);
-        const savedMenu = await this.menuItemsRepository.save(menu);
-
-        // Handle both single entity and array return types
-        const menuId = Array.isArray(savedMenu) ? savedMenu[0]?.id : savedMenu.id;
+        // Insert menu item and get the ID
+        const result = await this.menuItemsRepository.insert(menuFields);
+        const menuId = result.identifiers[0].id;
 
         // Create package-menu relationship if package_id provided
         if (package_id && menuId) {
-            const packageMenu = this.packageMenusRepository.create({
+            await this.packageMenusRepository.insert({
                 package_id,
                 menu_item_id: menuId,
             });
-            await this.packageMenusRepository.save(packageMenu);
         }
 
         return this.findOneMenu(menuId);
