@@ -24,7 +24,8 @@ export default function LoginPage() {
             localStorage.setItem('user', JSON.stringify(user));
 
             // Redirect based on role
-            switch (user.role) {
+            const roleName = user.role?.name || user.role;
+            switch (roleName) {
                 case 'Admin':
                     router.push('/admin');
                     break;
@@ -38,7 +39,7 @@ export default function LoginPage() {
                     router.push('/kitchen');
                     break;
                 default:
-                    router.push('/');
+                    router.push('/staff');
             }
         } catch (err: any) {
             setError(err.response?.data?.message || 'เข้าสู่ระบบไม่สำเร็จ');

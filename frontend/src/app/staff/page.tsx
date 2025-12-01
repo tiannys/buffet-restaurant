@@ -10,8 +10,27 @@ export default function StaffDashboard() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Check authentication and role
+        const token = localStorage.getItem('token');
+        const userStr = localStorage.getItem('user');
+
+        if (!token || !userStr) {
+            router.push('/login');
+            return;
+        }
+
+        const userData = JSON.parse(userStr);
+        const roleName = userData.role?.name || userData.role;
+
+        // Only Staff and Admin can access
+        if (roleName !== 'Staff' && roleName !== 'Admin') {
+            alert('คุณไม่มีสิทธิ์เข้าถึงหน้านี้');
+            router.push('/login');
+            return;
+        }
+
         loadDashboard();
-    }, []);
+    }, [router]);
 
     const loadDashboard = async () => {
         try {
@@ -61,10 +80,10 @@ export default function StaffDashboard() {
                     <div
                         key={table.id}
                         className={`rounded-lg p-6 shadow-lg ${table.status === 'available'
-                                ? 'bg-green-100 border-2 border-green-300'
-                                : table.status === 'occupied'
-                                    ? 'bg-blue-100 border-2 border-blue-300'
-                                    : 'bg-gray-100 border-2 border-gray-300'
+                            ? 'bg-green-100 border-2 border-green-300'
+                            : table.status === 'occupied'
+                                ? 'bg-blue-100 border-2 border-blue-300'
+                                : 'bg-gray-100 border-2 border-gray-300'
                             }`}
                     >
                         <div className="text-center">
