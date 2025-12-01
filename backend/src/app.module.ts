@@ -13,6 +13,8 @@ import { LoyaltyModule } from './loyalty/loyalty.module';
 import { ReportsModule } from './reports/reports.module';
 import { SettingsModule } from './settings/settings.module';
 import { UploadsModule } from './uploads/uploads.module';
+import { RolesModule } from './roles/roles.module';
+import { BranchesModule } from './branches/branches.module';
 
 // Import all entities
 import { User } from './database/entities/user.entity';
@@ -77,6 +79,8 @@ import { Setting } from './database/entities/setting.entity';
         // Feature modules
         AuthModule,
         UsersModule,
+        RolesModule,
+        BranchesModule,
         PackagesModule,
         MenusModule,
         TablesModule,

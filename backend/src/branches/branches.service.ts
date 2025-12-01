@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Branch } from './branch.entity';
+import { Branch } from '../database/entities/branch.entity';
 
 @Injectable()
 export class BranchesService {
