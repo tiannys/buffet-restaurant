@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { tables, sessions, billing, loyalty, orders, users, packages, menus } from '@/lib/api';
 import UserManagement from '@/components/UserManagement';
-import MenuManagement from '@/components/MenuManagement';
-import PackageManagement from '@/components/PackageManagement';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -33,8 +31,6 @@ export default function DashboardPage() {
 
     // Management modals
     const [showUserManagement, setShowUserManagement] = useState(false);
-    const [showMenuManagement, setShowMenuManagement] = useState(false);
-    const [showPackageManagement, setShowPackageManagement] = useState(false);
 
     useEffect(() => {
         // Check authentication
@@ -137,28 +133,54 @@ export default function DashboardPage() {
     const roleName = user.role?.name || user.role;
 
     return (
-        selectedSession = { selectedSession }
-                        setSelectedSession = { setSelectedSession }
-    billCalculation = { billCalculation }
-    setBillCalculation = { setBillCalculation }
-    onReload = { loadCashierData }
-        />
-                )
-}
-{ roleName === 'Kitchen' && <KitchenDashboard orders={pendingOrders} onReload={loadKitchenData} /> }
-            </main >
+        <div className="min-h-screen bg-gray-50">
+            {/* Header */}
+            <header className="bg-white shadow">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">
+                            Buffet Restaurant Management System
+                        </h1>
+                        <p className="text-sm text-gray-600">Role: {roleName}</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <span className="text-gray-700">{user.full_name}</span>
+                        <button
+                            onClick={handleLogout}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </header>
 
-    {/* Management Modals */ }
-{
-    showUserManagement && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-auto">
-                <UserManagement onClose={() => setShowUserManagement(false)} />
-            </div>
+            {/* Main Content */}
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {roleName === 'Admin' && <AdminDashboard stats={adminStats} onShowUserManagement={() => setShowUserManagement(true)} />}
+                {roleName === 'Staff' && <StaffDashboard dashboard={tableDashboard} />}
+                {roleName === 'Cashier' && (
+                    <CashierDashboard
+                        sessions={activeSessions}
+                        selectedSession={selectedSession}
+                        setSelectedSession={setSelectedSession}
+                        billCalculation={billCalculation}
+                        setBillCalculation={setBillCalculation}
+                        onReload={loadCashierData}
+                    />
+                )}
+                {roleName === 'Kitchen' && <KitchenDashboard orders={pendingOrders} onReload={loadKitchenData} />}
+            </main>
+
+            {/* Management Modals */}
+            {showUserManagement && (
+                <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-auto">
+                        <UserManagement onClose={() => setShowUserManagement(false)} />
+                    </div>
+                </div>
+            )}
         </div>
-    )
-}
-        </div >
     );
 }
 
@@ -197,26 +219,20 @@ function AdminDashboard({ stats, onShowUserManagement }: any) {
                         onClick={onShowUserManagement}
                         className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                     >
-                        User Management
+                        Actionsผู้ใช้
                     </button>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
                     <h3 className="text-lg font-bold mb-2">Menu Management</h3>
                     <p className="text-gray-600 text-sm mb-4">Add, edit, delete menu items</p>
-                    <button
-                        onClick={() => setShowMenuManagement(true)}
-                        className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                    >
+                    <button className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
                         Menu Management
                     </button>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
                     <h3 className="text-lg font-bold mb-2">Package Management</h3>
                     <p className="text-gray-600 text-sm mb-4">Manage buffet packages</p>
-                    <button
-                        onClick={() => setShowPackageManagement(true)}
-                        className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-                    >
+                    <button className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
                         Package Management
                     </button>
                 </div>
