@@ -194,7 +194,7 @@ export default function DashboardPage() {
                                 ×
                             </button>
                         </div>
-                        <UserManagement />
+                        <UserManagement onClose={() => setShowUserManagement(false)} />
                     </div>
                 </div>
             )}
@@ -211,7 +211,7 @@ export default function DashboardPage() {
                                 ×
                             </button>
                         </div>
-                        <MenuManagement />
+                        <MenuManagement onClose={() => setShowMenuManagement(false)} />
                     </div>
                 </div>
             )}
@@ -228,7 +228,7 @@ export default function DashboardPage() {
                                 ×
                             </button>
                         </div>
-                        <PackageManagement />
+                        <PackageManagement onClose={() => setShowPackageManagement(false)} />
                     </div>
                 </div>
             )}
