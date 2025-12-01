@@ -38,7 +38,7 @@ export class MenusService {
 
         // Create menu item
         const menu = this.menuItemsRepository.create(menuFields);
-        const savedMenu: MenuItem = await this.menuItemsRepository.save(menu);
+        const savedMenu = await this.menuItemsRepository.save(menu) as MenuItem;
 
         // Create package-menu relationship if package_id provided
         if (package_id) {
