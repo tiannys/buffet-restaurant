@@ -1,19 +1,18 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:14-alpine
     container_name: buffet-postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: buffet_restaurant
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres123
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: buffet_restaurant
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/database/migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
     networks:
       - buffet-network
     healthcheck:
@@ -22,56 +21,51 @@ services:
       timeout: 5s
       retries: 5
 
-  # Backend API (NestJS)
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: buffet-backend
+    restart: unless-stopped
     environment:
-      NODE_ENV: production
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_USER: postgres
+      DB_USERNAME: postgres
       DB_PASSWORD: postgres123
-      DB_NAME: buffet_restaurant
-      JWT_SECRET: your-super-secret-jwt-key-change-this-in-production
+      DB_DATABASE: buffet_restaurant
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
       JWT_EXPIRES_IN: 24h
       PORT: 3000
+      NODE_ENV: production
     ports:
       - "3000:3000"
     depends_on:
       postgres:
         condition: service_healthy
-    volumes:
-      - ./backend/uploads:/app/uploads
-      - ./backend/public:/app/public
     networks:
       - buffet-network
-    restart: unless-stopped
+    volumes:
+      - ./backend/uploads:/app/uploads
 
-  # Frontend (Next.js)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: buffet-frontend
+    restart: unless-stopped
     environment:
-      NODE_ENV: production
       NEXT_PUBLIC_API_URL: http://localhost:3000/api/v1
-      NEXT_PUBLIC_WS_URL: http://localhost:3000
+      NEXT_PUBLIC_FRONTEND_URL: http://localhost:3001
     ports:
-      - "3001:3000"
+      - "3001:3001"
     depends_on:
       - backend
     networks:
       - buffet-network
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
-    driver: local
 
 networks:
   buffet-network:
     driver: bridge
+
+volumes:
+  postgres_data:
