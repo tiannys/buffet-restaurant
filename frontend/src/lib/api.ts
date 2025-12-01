@@ -59,8 +59,6 @@ export const branches = {
 
 export const packages = {
     getAll: () => apiClient.get('/packages'),
-    getOne: (id: string) => apiClient.get(`/packages/${id}`),
-    getMenus: (id: string) => apiClient.get(`/packages/${id}/menus`),
     create: (data: any) => apiClient.post('/packages', data),
     update: (id: string, data: any) => apiClient.put(`/packages/${id}`, data),
     delete: (id: string) => apiClient.delete(`/packages/${id}`),
