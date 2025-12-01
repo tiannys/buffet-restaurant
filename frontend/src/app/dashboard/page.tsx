@@ -219,7 +219,7 @@ function AdminDashboard({ stats, onShowUserManagement }: any) {
                         onClick={onShowUserManagement}
                         className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                     >
-                        Actionsผู้ใช้
+                        Manage Users
                     </button>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
