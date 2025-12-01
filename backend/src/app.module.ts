@@ -14,6 +14,24 @@ import { ReportsModule } from './reports/reports.module';
 import { SettingsModule } from './settings/settings.module';
 import { UploadsModule } from './uploads/uploads.module';
 
+// Import all entities
+import { User } from './database/entities/user.entity';
+import { Role } from './database/entities/role.entity';
+import { Branch } from './database/entities/branch.entity';
+import { Package } from './database/entities/package.entity';
+import { MenuItem } from './database/entities/menu-item.entity';
+import { MenuCategory } from './database/entities/menu-category.entity';
+import { PackageMenu } from './database/entities/package-menu.entity';
+import { Table } from './database/entities/table.entity';
+import { CustomerSession } from './database/entities/customer-session.entity';
+import { Order } from './database/entities/order.entity';
+import { OrderItem } from './database/entities/order-item.entity';
+import { Receipt } from './database/entities/receipt.entity';
+import { Payment } from './database/entities/payment.entity';
+import { Member } from './database/entities/member.entity';
+import { MemberPoints } from './database/entities/member-points.entity';
+import { Setting } from './database/entities/setting.entity';
+
 @Module({
     imports: [
         // Configuration
@@ -33,8 +51,25 @@ import { UploadsModule } from './uploads/uploads.module';
                 username: configService.get('DB_USERNAME'),
                 password: configService.get('DB_PASSWORD'),
                 database: configService.get('DB_DATABASE'),
-                entities: [__dirname + '/**/*.entity{.ts,.js}'], // Support both .ts and .js
-                synchronize: true, // Auto-create tables (set to false in production after first run)
+                entities: [
+                    User,
+                    Role,
+                    Branch,
+                    Package,
+                    MenuItem,
+                    MenuCategory,
+                    PackageMenu,
+                    Table,
+                    CustomerSession,
+                    Order,
+                    OrderItem,
+                    Receipt,
+                    Payment,
+                    Member,
+                    MemberPoints,
+                    Setting,
+                ],
+                synchronize: true, // Auto-create tables
                 logging: configService.get('NODE_ENV') === 'development',
             }),
         }),
