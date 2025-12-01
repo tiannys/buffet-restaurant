@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Modal from '@/components/Modal';
-import { users } from '@/lib/api';
+import { users, roles as rolesApi, branches as branchesApi } from '@/lib/api';
 
 interface User {
     id: string;
@@ -39,20 +39,9 @@ export default function UserManagement({ onClose }: UserManagementProps) {
 
     const loadRoles = async () => {
         try {
-            // ดึง roles จาก users ที่มีอยู่แล้ว
-            const response = await users.getAll();
-            const uniqueRoles = new Map();
-
-            response.data.forEach((user: any) => {
-                if (user.role && user.role.id) {
-                    uniqueRoles.set(user.role.id, {
-                        id: user.role.id,
-                        name: user.role.name
-                    });
-                }
-            });
-
-            setRoles(Array.from(uniqueRoles.values()));
+            // ดึง roles ทั้งหมดจาก database
+            const response = await rolesApi.getAll();
+            setRoles(response.data);
         } catch (error) {
             console.error('Failed to load roles:', error);
         }
@@ -60,23 +49,9 @@ export default function UserManagement({ onClose }: UserManagementProps) {
 
     const loadBranches = async () => {
         try {
-            // ดึง branches จาก users ที่มีอยู่แล้ว
-            const response = await users.getAll();
-            const uniqueBranches = new Map();
-
-            response.data.forEach((user: any) => {
-                if (user.branch_id) {
-                    // ใช้ branch_id เป็น key เพื่อหา unique branches
-                    if (!uniqueBranches.has(user.branch_id)) {
-                        uniqueBranches.set(user.branch_id, {
-                            id: user.branch_id,
-                            name: user.branch?.name || 'สาขาหลัก'
-                        });
-                    }
-                }
-            });
-
-            setBranches(Array.from(uniqueBranches.values()));
+            // ดึง branches ทั้งหมดจาก database
+            const response = await branchesApi.getAll();
+            setBranches(response.data);
         } catch (error) {
             console.error('Failed to load branches:', error);
         }
