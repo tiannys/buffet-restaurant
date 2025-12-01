@@ -188,12 +188,12 @@ export default function DashboardPage() {
 function AdminDashboard({ stats, onShowUserManagement }: any) {
     return (
         <div>
-            <h2 className="text-xl font-bold mb-6">แดชบอร์ดผู้ดูแลระบบ</h2>
+            <h2 className="text-xl font-bold mb-6">Admin Dashboard</h2>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div className="bg-white rounded-lg shadow p-6">
-                    <div className="text-sm text-gray-600">ผู้ใช้งานทั้งหมด</div>
+                    <div className="text-sm text-gray-600">Total Users</div>
                     <div className="text-3xl font-bold text-blue-600 mt-2">{stats.totalUsers}</div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
@@ -252,9 +252,9 @@ function AdminDashboard({ stats, onShowUserManagement }: any) {
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">
                     <h3 className="text-lg font-bold mb-2">System Settings</h3>
-                    <p className="text-gray-600 text-sm mb-4">ตั้งค่า VAT, Service Charge</p>
+                    <p className="text-gray-600 text-sm mb-4">Settings VAT, Service Charge</p>
                     <button className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
-                        ตั้งค่า
+                        Settings
                     </button>
                 </div>
             </div>

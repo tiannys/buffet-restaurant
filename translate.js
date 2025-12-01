@@ -33,6 +33,8 @@ const translations = {
     'กำลังโหลด...': 'Loading...',
 
     // Dashboard
+    'แดชบอร์ดผู้ดูแลระบบ': 'Admin Dashboard',
+    'ผู้ใช้งานทั้งหมด': 'Total Users',
     'ระบบจัดการร้านบุฟเฟ่ต์': 'Buffet Restaurant Management System',
     'โต๊ะทั้งหมด': 'Total Tables',
     'แพ็คเกจ': 'Packages',
@@ -60,6 +62,7 @@ const translations = {
 
     // Settings
     'ตั้งค่าระบบ': 'System Settings',
+    'ตั้งค่า': 'Settings',
     'ชื่อร้าน': 'Restaurant Name',
     'โลโก้': 'Logo',
 };
