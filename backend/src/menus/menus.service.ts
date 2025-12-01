@@ -36,20 +36,20 @@ export class MenusService {
     async createMenu(menuData: any) {
         const { package_id, ...menuFields } = menuData;
 
-        // Create menu item
+        // Create and save menu item
         const menu = this.menuItemsRepository.create(menuFields);
-        const savedMenu = await this.menuItemsRepository.save(menu) as MenuItem;
+        await this.menuItemsRepository.save(menu);
 
         // Create package-menu relationship if package_id provided
-        if (package_id) {
+        if (package_id && menu.id) {
             const packageMenu = this.packageMenusRepository.create({
                 package_id,
-                menu_item_id: savedMenu.id,
+                menu_item_id: menu.id,
             });
             await this.packageMenusRepository.save(packageMenu);
         }
 
-        return this.findOneMenu(savedMenu.id);
+        return this.findOneMenu(menu.id);
     }
 
     async updateMenu(id: string, menuData: any) {
