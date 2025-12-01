@@ -71,12 +71,16 @@ export const menus = {
     getCategories: () => apiClient.get('/menus/categories/all'),
     create: (data: any) => apiClient.post('/menus', data),
     update: (id: string, data: any) => apiClient.put(`/menus/${id}`, data),
+    delete: (id: string) => apiClient.delete(`/menus/${id}`),
     toggleAvailability: (id: string) => apiClient.patch(`/menus/${id}/toggle-availability`),
 };
 
 export const tables = {
     getAll: () => apiClient.get('/tables'),
     getDashboard: () => apiClient.get('/tables/dashboard'),
+    create: (data: any) => apiClient.post('/tables', data),
+    update: (id: string, data: any) => apiClient.put(`/tables/${id}`, data),
+    delete: (id: string) => apiClient.delete(`/tables/${id}`),
     updateStatus: (id: string, status: string) =>
         apiClient.patch(`/tables/${id}/status`, { status }),
 };
