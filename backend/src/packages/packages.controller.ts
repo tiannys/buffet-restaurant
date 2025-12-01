@@ -3,6 +3,8 @@ import { PackagesService } from './packages.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CreatePackageDto } from './dto/create-package.dto';
+import { UpdatePackageDto } from './dto/update-package.dto';
 
 @Controller('packages')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -26,13 +28,13 @@ export class PackagesController {
 
     @Post()
     @Roles('Admin')
-    create(@Body() packageData: any) {
+    create(@Body() packageData: CreatePackageDto) {
         return this.packagesService.create(packageData);
     }
 
     @Put(':id')
     @Roles('Admin')
-    update(@Param('id') id: string, @Body() packageData: any) {
+    update(@Param('id') id: string, @Body() packageData: UpdatePackageDto) {
         return this.packagesService.update(id, packageData);
     }
 

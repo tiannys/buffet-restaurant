@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { packages } from '@/lib/api';
+import { packages, branches } from '@/lib/api';
 
 interface PackageManagementProps {
     onClose: () => void;
@@ -9,20 +9,25 @@ interface PackageManagementProps {
 
 export default function PackageManagement({ onClose }: PackageManagementProps) {
     const [packageList, setPackageList] = useState<any[]>([]);
+    const [branchesList, setBranchesList] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingPackage, setEditingPackage] = useState<any>(null);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        price: '',
+        adult_price: '',
+        child_price: '',
         duration_minutes: '',
+        branch_id: '',
         is_active: true,
     });
 
     useEffect(() => {
         loadPackages();
+        loadBranches();
     }, []);
+
 
     const loadPackages = async () => {
         try {
@@ -36,12 +41,22 @@ export default function PackageManagement({ onClose }: PackageManagementProps) {
         }
     };
 
+    const loadBranches = async () => {
+        try {
+            const response = await branches.getAll();
+            setBranchesList(response.data);
+        } catch (error) {
+            console.error('Failed to load branches:', error);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const data = {
                 ...formData,
-                price: parseFloat(formData.price),
+                adult_price: parseFloat(formData.adult_price),
+                child_price: parseFloat(formData.child_price),
                 duration_minutes: parseInt(formData.duration_minutes),
             };
 
@@ -67,8 +82,10 @@ export default function PackageManagement({ onClose }: PackageManagementProps) {
         setFormData({
             name: pkg.name,
             description: pkg.description || '',
-            price: pkg.price.toString(),
+            adult_price: pkg.adult_price?.toString() || '',
+            child_price: pkg.child_price?.toString() || '',
             duration_minutes: pkg.duration_minutes.toString(),
+            branch_id: pkg.branch_id || '',
             is_active: pkg.is_active,
         });
         setShowModal(true);
@@ -104,8 +121,10 @@ export default function PackageManagement({ onClose }: PackageManagementProps) {
         setFormData({
             name: '',
             description: '',
-            price: '',
+            adult_price: '',
+            child_price: '',
             duration_minutes: '',
+            branch_id: '',
             is_active: true,
         });
         setEditingPackage(null);
@@ -147,7 +166,8 @@ export default function PackageManagement({ onClose }: PackageManagementProps) {
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Adult Price</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Child Price</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Duration</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
@@ -158,7 +178,8 @@ export default function PackageManagement({ onClose }: PackageManagementProps) {
                             <tr key={pkg.id}>
                                 <td className="px-6 py-4 whitespace-nowrap">{pkg.name}</td>
                                 <td className="px-6 py-4">{pkg.description}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">฿{pkg.price}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">฿{pkg.adult_price}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">฿{pkg.child_price}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{pkg.duration_minutes} min</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <button
@@ -219,12 +240,23 @@ export default function PackageManagement({ onClose }: PackageManagementProps) {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">Price (฿)</label>
+                                <label className="block text-sm font-medium mb-2">Adult Price (฿)</label>
                                 <input
                                     type="number"
                                     step="0.01"
-                                    value={formData.price}
-                                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                    value={formData.adult_price}
+                                    onChange={(e) => setFormData({ ...formData, adult_price: e.target.value })}
+                                    className="w-full px-3 py-2 border rounded-lg"
+                                    required
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium mb-2">Child Price (฿)</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    value={formData.child_price}
+                                    onChange={(e) => setFormData({ ...formData, child_price: e.target.value })}
                                     className="w-full px-3 py-2 border rounded-lg"
                                     required
                                 />
@@ -238,6 +270,22 @@ export default function PackageManagement({ onClose }: PackageManagementProps) {
                                     className="w-full px-3 py-2 border rounded-lg"
                                     required
                                 />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium mb-2">Branch</label>
+                                <select
+                                    value={formData.branch_id}
+                                    onChange={(e) => setFormData({ ...formData, branch_id: e.target.value })}
+                                    className="w-full px-3 py-2 border rounded-lg"
+                                    required
+                                >
+                                    <option value="">Select a branch</option>
+                                    {branchesList.map((branch) => (
+                                        <option key={branch.id} value={branch.id}>
+                                            {branch.name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="mb-4">
                                 <label className="flex items-center">
