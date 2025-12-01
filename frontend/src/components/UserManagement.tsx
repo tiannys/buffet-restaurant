@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Modal from '@/components/Modal';
-import { users } from '@/lib/api';
+import { users, roles as rolesApi, branches as branchesApi } from '@/lib/api';
 
 interface User {
     id: string;
@@ -39,31 +39,36 @@ export default function UserManagement({ onClose }: UserManagementProps) {
 
     const loadRoles = async () => {
         try {
-            const response = await users.getAll(); // We'll use a roles endpoint later
-            // For now, extract unique roles from users
-            const uniqueRoles = Array.from(new Set(response.data.map((u: any) => u.role?.id).filter(Boolean)));
-            // Temporary: create role objects
+            const response = await rolesApi.getAll();
+            setRoles(response.data);
+        } catch (error) {
+            console.error('Failed to load roles:', error);
+            // Fallback to hardcoded if API fails
             setRoles([
                 { id: '1', name: 'Admin' },
                 { id: '2', name: 'Staff' },
                 { id: '3', name: 'Cashier' },
                 { id: '4', name: 'Kitchen' },
             ]);
-        } catch (error) {
-            console.error('Failed to load roles:', error);
         }
     };
 
     const loadBranches = async () => {
         try {
-            // Get first user's branch for now
-            const response = await users.getAll();
-            if (response.data.length > 0) {
-                const branchId = response.data[0].branch_id;
-                setBranches([{ id: branchId, name: 'สาขาหลัก' }]);
-            }
+            const response = await branchesApi.getAll();
+            setBranches(response.data);
         } catch (error) {
             console.error('Failed to load branches:', error);
+            // Fallback: get from first user
+            try {
+                const usersResponse = await users.getAll();
+                if (usersResponse.data.length > 0) {
+                    const branchId = usersResponse.data[0].branch_id;
+                    setBranches([{ id: branchId, name: 'สาขาหลัก' }]);
+                }
+            } catch (err) {
+                console.error('Failed to load branches from users:', err);
+            }
         }
     };
 

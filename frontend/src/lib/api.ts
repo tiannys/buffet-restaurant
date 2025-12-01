@@ -49,6 +49,14 @@ export const users = {
     delete: (id: string) => apiClient.delete(`/users/${id}`),
 };
 
+export const roles = {
+    getAll: () => apiClient.get('/roles'),
+};
+
+export const branches = {
+    getAll: () => apiClient.get('/branches'),
+};
+
 export const packages = {
     getAll: () => apiClient.get('/packages'),
     getOne: (id: string) => apiClient.get(`/packages/${id}`),
