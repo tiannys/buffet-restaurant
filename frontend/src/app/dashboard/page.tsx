@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { tables, sessions, billing, loyalty, orders } from '@/lib/api';
+import { tables, sessions, billing, loyalty, orders, users, packages, menus } from '@/lib/api';
 import UserManagement from '@/components/UserManagement';
 
 export default function DashboardPage() {
@@ -69,13 +69,24 @@ export default function DashboardPage() {
     };
 
     const loadAdminData = async () => {
-        // Placeholder - implement actual API calls
-        setAdminStats({
-            totalUsers: 10,
-            totalTables: 10,
-            totalPackages: 3,
-            totalMenuItems: 50,
-        });
+        try {
+            // Load real data from APIs
+            const [usersRes, tablesRes, packagesRes, menusRes] = await Promise.all([
+                users.getAll(),
+                tables.getAll(),
+                packages.getAll(),
+                menus.getAll(),
+            ]);
+
+            setAdminStats({
+                totalUsers: usersRes.data.length,
+                totalTables: tablesRes.data.length,
+                totalPackages: packagesRes.data.length,
+                totalMenuItems: menusRes.data.length,
+            });
+        } catch (error) {
+            console.error('Failed to load admin stats:', error);
+        }
     };
 
     const loadStaffData = async () => {

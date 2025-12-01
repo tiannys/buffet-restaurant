@@ -96,7 +96,7 @@ export default function CashierPage() {
             <div className="grid grid-cols-2 gap-6">
                 {/* Active Sessions */}
                 <div className="rounded-lg bg-white p-6 shadow">
-                    <h2 className="mb-4 text-xl font-semibold">โต๊ะที่มีลูกค้า</h2>
+                    <h2 className="mb-4 text-xl font-semibold">Active Tables</h2>
                     <div className="space-y-2">
                         {activeSessions.map(session => (
                             <button
@@ -105,7 +105,7 @@ export default function CashierPage() {
                                 className={`w-full rounded-lg border p-4 text-left hover:bg-blue-50 ${selectedSession?.id === session.id ? 'border-blue-500 bg-blue-50' : ''
                                     }`}
                             >
-                                <div className="font-medium">โต๊ะ {session.table.table_number}</div>
+                                <div className="font-medium">Table {session.table.table_number}</div>
                                 <div className="text-sm text-gray-600">{session.package.name}</div>
                                 <div className="text-sm text-gray-600">
                                     ผู้ใหญ่ {session.adult_count} / เด็ก {session.child_count}
@@ -234,7 +234,7 @@ export default function CashierPage() {
                             </button>
                         </div>
                     ) : (
-                        <p className="text-gray-600">เลือกโต๊ะเพื่อคำนวณบิล</p>
+                        <p className="text-gray-600">Select a table to calculate bill</p>
                     )}
                 </div>
             </div>

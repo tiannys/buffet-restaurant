@@ -48,17 +48,17 @@ export default function StaffDashboard() {
     };
 
     if (loading) {
-        return <div className="p-8">กำลังโหลด...</div>;
+        return <div className="p-8">Loading...</div>;
     }
 
     return (
         <div className="min-h-screen bg-gray-100 p-8">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-800">แดชบอร์ดโต๊ะ</h1>
+                <h1 className="text-3xl font-bold text-gray-800">Table Dashboard</h1>
                 <div className="mt-4 grid grid-cols-4 gap-4">
                     <div className="rounded-lg bg-white p-4 shadow">
                         <div className="text-2xl font-bold text-gray-800">{dashboard?.summary.total}</div>
-                        <div className="text-sm text-gray-600">โต๊ะทั้งหมด</div>
+                        <div className="text-sm text-gray-600">Total Tables</div>
                     </div>
                     <div className="rounded-lg bg-green-50 p-4 shadow">
                         <div className="text-2xl font-bold text-green-600">{dashboard?.summary.available}</div>
@@ -87,7 +87,7 @@ export default function StaffDashboard() {
                             }`}
                     >
                         <div className="text-center">
-                            <div className="text-3xl font-bold text-gray-800">โต๊ะ {table.table_number}</div>
+                            <div className="text-3xl font-bold text-gray-800">Table {table.table_number}</div>
                             <div className="mt-2 text-sm text-gray-600">
                                 {table.zone && `โซน: ${table.zone}`}
                             </div>
@@ -107,7 +107,7 @@ export default function StaffDashboard() {
                                     onClick={() => handleStartSession(table.id)}
                                     className="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                                 >
-                                    เริ่มรอบโต๊ะ
+                                    Start Session
                                 </button>
                             )}
                         </div>
