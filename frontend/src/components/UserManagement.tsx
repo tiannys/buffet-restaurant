@@ -130,24 +130,15 @@ export default function UserManagement({ onClose }: UserManagementProps) {
     }
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">User Management</h2>
-                <div className="flex gap-2">
-                    <button
-                        onClick={handleAdd}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    >
-                        + Add User
-                    </button>
-                    <button
-                        onClick={onClose}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-                    >
-                        Close
-                    </button>
-                </div>
+        <div className="space-y-6 p-4">
+            {/* Action Button */}
+            <div className="flex justify-end">
+                <button
+                    onClick={handleAdd}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                    + Add User
+                </button>
             </div>
 
             {/* User List */}

@@ -55,6 +55,7 @@ export class MenuItem {
     @Column({ type: 'integer', nullable: true, default: 10 })
     low_stock_threshold: number | null;
 
+
     @Column({ default: true })
     is_active: boolean;
 
@@ -63,13 +64,7 @@ export class MenuItem {
 
     @OneToMany(() => PackageMenu, (pm) => pm.menu_item)
     package_menus: PackageMenu[];
-	
-    @Column({ type: 'integer', nullable: true })
-    stock_quantity: number | null;
-	
-    @Column({ type: 'integer', nullable: true, default: 10 })
-    low_stock_threshold: number | null;
-	
+
     @CreateDateColumn()
     created_at: Date;
 

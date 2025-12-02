@@ -9,9 +9,9 @@ interface MenuItem {
     category?: { id: string; name: string };
     image_url?: string;
     is_available: boolean;
-    is_out_of_stock: boolean;
-    stock_quantity: number | null;
-    low_stock_threshold: number | null;
+    is_out_of_stock?: boolean;
+    stock_quantity?: number | null;
+    low_stock_threshold?: number | null;
     branch_id?: string;
     package_menus?: Array<{ package: { id: string; name: string } }>;
 }
@@ -122,6 +122,8 @@ export function useMenuForm() {
             branch_id: menu.branch_id || '',
             image_url: menu.image_url || '',
             is_available: menu.is_available,
+            stock_quantity: menu.stock_quantity ?? null,
+            low_stock_threshold: menu.low_stock_threshold ?? 10,
         });
         if (menu.image_url) {
             setImagePreview(menu.image_url);
@@ -137,6 +139,8 @@ export function useMenuForm() {
             branch_id: '',
             image_url: '',
             is_available: true,
+            stock_quantity: null,
+            low_stock_threshold: 10,
         });
         setEditingMenu(null);
         setImageFile(null);

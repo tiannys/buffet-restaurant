@@ -6,6 +6,7 @@ import { tables, sessions, billing, loyalty, orders, users, packages, menus } fr
 import UserManagement from '@/components/UserManagement';
 import MenuManagement from '@/components/MenuManagement';
 import PackageManagement from '@/components/PackageManagement';
+import TableManagement from '@/components/TableManagement';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -35,6 +36,7 @@ export default function DashboardPage() {
     const [showUserManagement, setShowUserManagement] = useState(false);
     const [showMenuManagement, setShowMenuManagement] = useState(false);
     const [showPackageManagement, setShowPackageManagement] = useState(false);
+    const [showTableManagement, setShowTableManagement] = useState(false);
 
     useEffect(() => {
         // Check authentication
@@ -166,6 +168,7 @@ export default function DashboardPage() {
                     onShowUserManagement={() => setShowUserManagement(true)}
                     onShowMenuManagement={() => setShowMenuManagement(true)}
                     onShowPackageManagement={() => setShowPackageManagement(true)}
+                    onShowTableManagement={() => setShowTableManagement(true)}
                 />}
                 {roleName === 'Staff' && <StaffDashboard dashboard={tableDashboard} />}
                 {roleName === 'Cashier' && (
@@ -232,12 +235,29 @@ export default function DashboardPage() {
                     </div>
                 </div>
             )}
+
+            {showTableManagement && (
+                <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-auto">
+                        <div className="p-4 border-b flex justify-between items-center">
+                            <h2 className="text-xl font-bold">Table Management</h2>
+                            <button
+                                onClick={() => setShowTableManagement(false)}
+                                className="text-gray-600 hover:text-gray-900 text-2xl"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <TableManagement onClose={() => setShowTableManagement(false)} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
 // Admin Dashboard Component
-function AdminDashboard({ stats, onShowUserManagement, onShowMenuManagement, onShowPackageManagement }: any) {
+function AdminDashboard({ stats, onShowUserManagement, onShowMenuManagement, onShowPackageManagement, onShowTableManagement }: any) {
     return (
         <div>
             <h2 className="text-xl font-bold mb-6">Admin Dashboard</h2>
@@ -297,8 +317,11 @@ function AdminDashboard({ stats, onShowUserManagement, onShowMenuManagement, onS
                 <div className="bg-white rounded-lg shadow p-6">
                     <h3 className="text-lg font-bold mb-2">Table Management</h3>
                     <p className="text-gray-600 text-sm mb-4">Add, edit, delete tables</p>
-                    <button className="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
-                        Table Management
+                    <button
+                        onClick={onShowTableManagement}
+                        className="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700"
+                    >
+                        Manage Tables
                     </button>
                 </div>
                 <div className="bg-white rounded-lg shadow p-6">

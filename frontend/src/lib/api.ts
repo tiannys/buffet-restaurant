@@ -73,6 +73,10 @@ export const menus = {
     toggleAvailability: (id: string) => apiClient.patch(`/menus/${id}/toggle-availability`),
     toggleStock: (id: string, isOutOfStock: boolean) =>
         apiClient.patch(`/menus/${id}/toggle-stock`, { is_out_of_stock: isOutOfStock }),
+    getLowStock: (branchId?: string) =>
+        apiClient.get('/menus/low-stock', { params: { branch_id: branchId } }),
+    updateStock: (id: string, stockQuantity: number) =>
+        apiClient.patch(`/menus/${id}/update-stock`, { stock_quantity: stockQuantity }),
     uploadImage: (file: File) => {
         const formData = new FormData();
         formData.append('image', file);
@@ -101,6 +105,16 @@ export const sessions = {
     getOne: (id: string) => apiClient.get(`/sessions/${id}`),
     getForCustomer: (id: string) => apiClient.get(`/sessions/customer/${id}`),
     end: (id: string) => apiClient.post(`/sessions/${id}/end`),
+    pause: (id: string) => apiClient.post(`/sessions/${id}/pause`),
+    resume: (id: string) => apiClient.post(`/sessions/${id}/resume`),
+    updatePackage: (id: string, packageId: string) =>
+        apiClient.patch(`/sessions/${id}/package`, { package_id: packageId }),
+    updateGuestCount: (id: string, adultCount: number, childCount: number) =>
+        apiClient.patch(`/sessions/${id}/guests`, { adult_count: adultCount, child_count: childCount }),
+    transferTable: (id: string, newTableId: string) =>
+        apiClient.patch(`/sessions/${id}/transfer`, { new_table_id: newTableId }),
+    getTimeRemaining: (id: string) => apiClient.get(`/sessions/${id}/time-remaining`),
+    getQRCode: (id: string) => apiClient.get(`/sessions/${id}/qr-code`),
 };
 
 export const orders = {

@@ -67,6 +67,15 @@ export class CustomerSession {
     @Column({ type: 'text', nullable: true })
     qr_code: string;
 
+    @Column({ type: 'integer', default: 0 })
+    paused_duration_minutes: number;
+
+    @Column({ type: 'timestamp', nullable: true })
+    paused_at: Date;
+
+    @Column({ type: 'timestamp', nullable: true })
+    actual_end_time: Date;
+
     @OneToMany(() => Order, (order) => order.session)
     orders: Order[];
 

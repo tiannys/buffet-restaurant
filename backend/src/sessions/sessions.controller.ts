@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -37,6 +37,59 @@ export class SessionsController {
     @Roles('Cashier', 'Admin')
     endSession(@Param('id') id: string) {
         return this.sessionsService.endSession(id);
+    }
+
+    @Post(':id/pause')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('Staff', 'Admin')
+    pauseSession(@Param('id') id: string) {
+        return this.sessionsService.pauseSession(id);
+    }
+
+    @Post(':id/resume')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('Staff', 'Admin')
+    resumeSession(@Param('id') id: string) {
+        return this.sessionsService.resumeSession(id);
+    }
+
+    @Patch(':id/package')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('Staff', 'Admin')
+    updatePackage(@Param('id') id: string, @Body('package_id') packageId: string) {
+        return this.sessionsService.updatePackage(id, packageId);
+    }
+
+    @Patch(':id/guests')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('Staff', 'Admin')
+    updateGuestCount(
+        @Param('id') id: string,
+        @Body('adult_count') adultCount: number,
+        @Body('child_count') childCount: number,
+    ) {
+        return this.sessionsService.updateGuestCount(id, adultCount, childCount);
+    }
+
+    @Patch(':id/transfer')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('Staff', 'Admin')
+    transferTable(@Param('id') id: string, @Body('new_table_id') newTableId: string) {
+        return this.sessionsService.transferTable(id, newTableId);
+    }
+
+    @Get(':id/time-remaining')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('Staff', 'Admin', 'Cashier')
+    getTimeRemaining(@Param('id') id: string) {
+        return this.sessionsService.getTimeRemaining(id);
+    }
+
+    @Get(':id/qr-code')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('Staff', 'Admin')
+    getQRCode(@Param('id') id: string) {
+        return this.sessionsService.getQRCode(id);
     }
 
     // Public endpoint for customers (no auth)

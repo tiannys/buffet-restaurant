@@ -134,4 +134,186 @@ export class SessionsService {
 
         return { message: 'Session ended successfully' };
     }
+
+    async pauseSession(id: string) {
+        const session = await this.sessionsRepository.findOne({ where: { id } });
+
+        if (!session) {
+            throw new Error('Session not found');
+        }
+
+        if (session.paused_at) {
+            throw new Error('Session is already paused');
+        }
+
+        session.paused_at = new Date();
+        await this.sessionsRepository.save(session);
+
+        return { message: 'Session paused successfully', paused_at: session.paused_at };
+    }
+
+    async resumeSession(id: string) {
+        const session = await this.sessionsRepository.findOne({ where: { id } });
+
+        if (!session) {
+            throw new Error('Session not found');
+        }
+
+        if (!session.paused_at) {
+            throw new Error('Session is not paused');
+        }
+
+        // Calculate paused duration
+        const now = new Date();
+        const pausedMs = now.getTime() - session.paused_at.getTime();
+        const pausedMinutes = Math.floor(pausedMs / 60000);
+
+        session.paused_duration_minutes += pausedMinutes;
+        session.paused_at = null;
+
+        // Extend end time by paused duration
+        const newEndTime = new Date(session.end_time.getTime() + pausedMs);
+        session.end_time = newEndTime;
+
+        await this.sessionsRepository.save(session);
+
+        return {
+            message: 'Session resumed successfully',
+            paused_minutes: pausedMinutes,
+            new_end_time: newEndTime
+        };
+    }
+
+    async updatePackage(id: string, newPackageId: string) {
+        const session = await this.sessionsRepository.findOne({
+            where: { id },
+            relations: ['package'],
+        });
+
+        if (!session) {
+            throw new Error('Session not found');
+        }
+
+        const newPackage = await this.packagesRepository.findOne({
+            where: { id: newPackageId },
+        });
+
+        if (!newPackage) {
+            throw new Error('Package not found');
+        }
+
+        // Calculate new end time based on new package duration
+        const elapsed = new Date().getTime() - session.start_time.getTime();
+        const newEndTime = new Date(session.start_time.getTime() + newPackage.duration_minutes * 60000);
+
+        session.package_id = newPackageId;
+        session.end_time = newEndTime;
+
+        await this.sessionsRepository.save(session);
+
+        return this.findOne(id);
+    }
+
+    async updateGuestCount(id: string, adultCount: number, childCount: number) {
+        const session = await this.sessionsRepository.findOne({ where: { id } });
+
+        if (!session) {
+            throw new Error('Session not found');
+        }
+
+        session.adult_count = adultCount;
+        session.child_count = childCount;
+
+        await this.sessionsRepository.save(session);
+
+        return this.findOne(id);
+    }
+
+    async transferTable(id: string, newTableId: string) {
+        const session = await this.sessionsRepository.findOne({
+            where: { id },
+            relations: ['table'],
+        });
+
+        if (!session) {
+            throw new Error('Session not found');
+        }
+
+        const newTable = await this.tablesRepository.findOne({
+            where: { id: newTableId },
+        });
+
+        if (!newTable) {
+            throw new Error('Table not found');
+        }
+
+        if (newTable.status !== TableStatus.AVAILABLE) {
+            throw new Error('New table is not available');
+        }
+
+        const oldTableId = session.table_id;
+
+        // Update session
+        session.table_id = newTableId;
+        await this.sessionsRepository.save(session);
+
+        // Update old table status
+        await this.tablesRepository.update(oldTableId, {
+            status: TableStatus.CLEANING,
+        });
+
+        // Update new table status
+        await this.tablesRepository.update(newTableId, {
+            status: TableStatus.OCCUPIED,
+        });
+
+        return this.findOne(id);
+    }
+
+    async getTimeRemaining(id: string) {
+        const session = await this.sessionsRepository.findOne({ where: { id } });
+
+        if (!session) {
+            throw new Error('Session not found');
+        }
+
+        const now = new Date();
+
+        // If paused, calculate from when it was paused
+        if (session.paused_at) {
+            const remainingMs = session.end_time.getTime() - session.paused_at.getTime();
+            const remainingMinutes = Math.max(0, Math.floor(remainingMs / 60000));
+
+            return {
+                remaining_minutes: remainingMinutes,
+                is_paused: true,
+                paused_at: session.paused_at,
+                total_paused_minutes: session.paused_duration_minutes,
+            };
+        }
+
+        // Normal calculation
+        const remainingMs = session.end_time.getTime() - now.getTime();
+        const remainingMinutes = Math.max(0, Math.floor(remainingMs / 60000));
+
+        return {
+            remaining_minutes: remainingMinutes,
+            is_paused: false,
+            total_paused_minutes: session.paused_duration_minutes,
+            end_time: session.end_time,
+        };
+    }
+
+    async getQRCode(id: string) {
+        const session = await this.sessionsRepository.findOne({ where: { id } });
+
+        if (!session) {
+            throw new Error('Session not found');
+        }
+
+        return {
+            qr_code: session.qr_code,
+            session_id: session.id,
+        };
+    }
 }

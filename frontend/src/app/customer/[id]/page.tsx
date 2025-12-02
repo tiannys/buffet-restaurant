@@ -144,11 +144,10 @@ export default function CustomerMenuPage() {
         <div className="flex gap-2 overflow-x-auto">
           <button
             onClick={() => setSelectedCategory("all")}
-            className={`whitespace-nowrap rounded-full px-4 py-2 text-sm ${
-              selectedCategory === "all"
+            className={`whitespace-nowrap rounded-full px-4 py-2 text-sm ${selectedCategory === "all"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700"
-            }`}
+              }`}
           >
             ทั้งหมด
           </button>
@@ -156,11 +155,10 @@ export default function CustomerMenuPage() {
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm ${
-                selectedCategory === cat.id
+              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm ${selectedCategory === cat.id
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200 text-gray-700"
-              }`}
+                }`}
             >
               {cat.name}
             </button>
@@ -191,17 +189,8 @@ export default function CustomerMenuPage() {
                   </p>
                 )}
 
-                {/* Stock status */}
-                {menu.stock_quantity !== null &&
-                  menu.stock_quantity <= 5 &&
-                  menu.stock_quantity > 0 && (
-                    <p className="mt-1 text-xs text-orange-600">
-                      Only {menu.stock_quantity} left!
-                    </p>
-                  )}
-
                 {/* Button: disable when out of stock */}
-                {menu.is_out_of_stock || menu.stock_quantity === 0 ? (
+                {menu.is_out_of_stock ? (
                   <button
                     disabled
                     className="mt-2 w-full rounded-md bg-gray-300 px-3 py-2 text-sm text-gray-500 cursor-not-allowed"

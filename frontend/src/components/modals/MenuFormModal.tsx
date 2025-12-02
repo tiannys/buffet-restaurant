@@ -26,6 +26,8 @@ interface MenuFormModalProps {
         branch_id: string;
         image_url: string;
         is_available: boolean;
+        stock_quantity: number | null;
+        low_stock_threshold: number | null;
     };
     categories: Category[];
     packagesList: Package[];
@@ -102,52 +104,6 @@ export default function MenuFormModal({
                     </div>
 
                     <div>
-                        <label>Stock Tracking</label>
-                        <select
-                            value={formData.stock_quantity === null ? 'unlimited' : 'tracked'}
-                            onChange={(e) => {
-                                const isUnlimited = e.target.value === 'unlimited';
-                                onFormDataChange({
-                                    ...formData,
-                                    stock_quantity: isUnlimited ? null : 0,
-                                });
-                            }}
-                        >
-                            <option value="unlimited">Unlimited (Buffet Item)</option>
-                            <option value="tracked">Track Quantity</option>
-                        </select>
-                    </div>
-                    {formData.stock_quantity !== null && (
-                        <>
-                            <div>
-                                <label>Current Stock Quantity</label>
-                                <input
-                                    type="number"
-                                    value={formData.stock_quantity || 0}
-                                    onChange={(e) => onFormDataChange({
-                                        ...formData,
-                                        stock_quantity: parseInt(e.target.value),
-                                    })}
-                                    min="0"
-                                />
-                            </div>
-
-                            <div>
-                                <label>Low Stock Alert (threshold)</label>
-                                <input
-                                    type="number"
-                                    value={formData.low_stock_threshold || 10}
-                                    onChange={(e) => onFormDataChange({
-                                        ...formData,
-                                        low_stock_threshold: parseInt(e.target.value),
-                                    })}
-                                    min="0"
-                                />
-                            </div>
-                        </>
-                    )}
-
-                    <div>
                         <label className="block text-sm font-medium text-gray-700">
                             Package * <span className="text-xs text-gray-500">(Menu will appear in this package and higher tiers)</span>
                         </label>
@@ -184,6 +140,56 @@ export default function MenuFormModal({
                     </div>
 
                     <div>
+                        <label className="block text-sm font-medium text-gray-700">Stock Tracking</label>
+                        <select
+                            value={formData.stock_quantity === null ? 'unlimited' : 'tracked'}
+                            onChange={(e) => {
+                                const isUnlimited = e.target.value === 'unlimited';
+                                onFormDataChange({
+                                    ...formData,
+                                    stock_quantity: isUnlimited ? null : 0,
+                                });
+                            }}
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                        >
+                            <option value="unlimited">Unlimited (Buffet Item)</option>
+                            <option value="tracked">Track Quantity</option>
+                        </select>
+                    </div>
+                    {formData.stock_quantity !== null && (
+                        <>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Current Stock Quantity</label>
+                                <input
+                                    type="number"
+                                    value={formData.stock_quantity || 0}
+                                    onChange={(e) => onFormDataChange({
+                                        ...formData,
+                                        stock_quantity: parseInt(e.target.value),
+                                    })}
+                                    min="0"
+                                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Low Stock Alert (threshold)</label>
+                                <input
+                                    type="number"
+                                    value={formData.low_stock_threshold || 10}
+                                    onChange={(e) => onFormDataChange({
+                                        ...formData,
+                                        low_stock_threshold: parseInt(e.target.value),
+                                    })}
+                                    min="0"
+                                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                                />
+                            </div>
+                        </>
+                    )}
+
+
+                    <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Image</label>
 
                         {/* Image Preview */}
@@ -213,19 +219,28 @@ export default function MenuFormModal({
                                 onChange={(e) => {
                                     onFormDataChange({ ...formData, image_url: e.target.value });
                                 }}
-                                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-                                disabled={uploading}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-                                disabled={uploading}
-                            >
-                                {uploading ? 'Uploading...' : editingMenu ? 'Save' : 'Add'}
-                            </button>
+                                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                            />
                         </div>
+                    </div>
+
+                    <div className="flex justify-end gap-2 mt-6">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                            disabled={uploading}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                            disabled={uploading}
+                        >
+                            {uploading ? 'Uploading...' : editingMenu ? 'Save' : 'Add'}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

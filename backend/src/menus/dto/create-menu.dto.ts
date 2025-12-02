@@ -37,4 +37,14 @@ export class CreateMenuDto {
     @IsOptional()
     @Min(0)
     sort_order?: number;
+
+    @IsInt()
+    @IsOptional()
+    @Min(0)
+    stock_quantity?: number | null;
+
+    @IsInt()
+    @IsOptional()
+    @Min(0)
+    low_stock_threshold?: number | null;
 }

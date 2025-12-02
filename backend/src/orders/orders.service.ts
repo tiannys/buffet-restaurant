@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Order, OrderStatus } from '../database/entities/order.entity';
 import { OrderItem } from '../database/entities/order-item.entity';
 import { CustomerSession } from '../database/entities/customer-session.entity';
+import { MenuItem } from '../database/entities/menu-item.entity';
 
 @Injectable()
 export class OrdersService {
@@ -14,29 +15,45 @@ export class OrdersService {
         private orderItemsRepository: Repository<OrderItem>,
         @InjectRepository(CustomerSession)
         private sessionsRepository: Repository<CustomerSession>,
+        @InjectRepository(MenuItem)
+        private menuItemsRepository: Repository<MenuItem>,
     ) { }
 
     async createOrder(orderData: any) {
-        // Check stock for all items
-        for (const item of orderData.items) {
-            const hasStock = await this.menusService.checkStockAvailability(
-                item.menu_item_id,
-                item.quantity
-            );
-        
-            if (!hasStock) {
-                throw new Error(`Menu item ${item.menu_item_id} is out of stock`);
+        // Validate stock availability and deduct stock for tracked items
+        if (orderData.items && orderData.items.length > 0) {
+            for (const item of orderData.items) {
+                const menuItem = await this.menuItemsRepository.findOne({
+                    where: { id: item.menu_item_id }
+                });
+
+                if (!menuItem) {
+                    throw new Error(`Menu item ${item.menu_item_id} not found`);
+                }
+
+                // Check if item is out of stock
+                if (menuItem.is_out_of_stock) {
+                    throw new Error(`${menuItem.name} is currently out of stock`);
+                }
+
+                // If stock is tracked (not null), validate and deduct
+                if (menuItem.stock_quantity !== null) {
+                    if (menuItem.stock_quantity < item.quantity) {
+                        throw new Error(`Insufficient stock for ${menuItem.name}. Available: ${menuItem.stock_quantity}, Requested: ${item.quantity}`);
+                    }
+
+                    // Deduct stock
+                    const newStock = menuItem.stock_quantity - item.quantity;
+                    await this.menuItemsRepository.update(menuItem.id, {
+                        stock_quantity: newStock,
+                        is_out_of_stock: newStock <= 0,
+                    });
+                }
             }
         }
-    
+
         // Create order
         const order = await this.ordersRepository.save(orderData);
-    
-        // Decrement stock
-        for (const item of orderData.items) {
-            await this.menusService.decrementStock(item.menu_item_id, item.quantity);
-        }
-    
         return order;
     }
 
