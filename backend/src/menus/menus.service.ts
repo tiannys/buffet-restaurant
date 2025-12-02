@@ -98,15 +98,38 @@ export class MenusService {
         await this.menuItemsRepository.save(menu);
         return {
             message: `Menu item marked as ${isOutOfStock ? 'out of stock' : 'in stock'}`,
-        }
+            menu
+        };
+    }
+
+
+    // Categories
+    async findAllCategories(branchId?: string) {
+        const where = branchId ? { branch_id: branchId, is_active: true } : { is_active: true };
+        return this.categoriesRepository.find({
+            where,
+            order: { sort_order: 'ASC' },
+        });
+    }
+
+    async findOneCategory(id: string) {
+        return this.categoriesRepository.findOne({
+            where: { id },
+        });
+    }
+
+    async createCategory(categoryData: any) {
+        const category = this.categoriesRepository.create(categoryData);
+        return this.categoriesRepository.save(category);
+    }
 
     async updateCategory(id: string, categoryData: any) {
-            await this.categoriesRepository.update(id, categoryData);
-            return this.findOneCategory(id);
-        }
+        await this.categoriesRepository.update(id, categoryData);
+        return this.findOneCategory(id);
+    }
 
     async deleteCategory(id: string) {
-            await this.categoriesRepository.update(id, { is_active: false });
-            return { message: 'Category deactivated successfully' };
-        }
+        await this.categoriesRepository.update(id, { is_active: false });
+        return { message: 'Category deactivated successfully' };
     }
+}
