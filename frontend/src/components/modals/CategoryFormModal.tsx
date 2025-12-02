@@ -1,5 +1,10 @@
 'use client';
 
+interface Branch {
+    id: string;
+    name: string;
+}
+
 interface CategoryFormModalProps {
     show: boolean;
     editingCategory: any;
@@ -7,8 +12,10 @@ interface CategoryFormModalProps {
         name: string;
         description: string;
         sort_order: string;
+        branch_id: string;
         is_active: boolean;
     };
+    branchesList: Branch[];
     onSubmit: (e: React.FormEvent) => void;
     onClose: () => void;
     onFormDataChange: (data: any) => void;
@@ -18,6 +25,7 @@ export default function CategoryFormModal({
     show,
     editingCategory,
     formData,
+    branchesList,
     onSubmit,
     onClose,
     onFormDataChange,
@@ -49,6 +57,22 @@ export default function CategoryFormModal({
                             className="w-full px-3 py-2 border rounded-lg"
                             rows={3}
                         />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Branch *</label>
+                        <select
+                            value={formData.branch_id}
+                            onChange={(e) => onFormDataChange({ ...formData, branch_id: e.target.value })}
+                            className="w-full px-3 py-2 border rounded-lg"
+                            required
+                        >
+                            <option value="">Select a branch</option>
+                            {branchesList.map((branch) => (
+                                <option key={branch.id} value={branch.id}>
+                                    {branch.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div className="mb-4">
                         <label className="block text-sm font-medium mb-2">Sort Order</label>

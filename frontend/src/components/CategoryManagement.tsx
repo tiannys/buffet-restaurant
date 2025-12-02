@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { menus } from '@/lib/api';
+import { menus, branches } from '@/lib/api';
 import { useCategoryForm } from '@/hooks/useCategoryForm';
 import CategoryFormModal from '@/components/modals/CategoryFormModal';
 
@@ -11,6 +11,12 @@ interface Category {
     description?: string;
     sort_order: number;
     is_active: boolean;
+    branch_id?: string;
+}
+
+interface Branch {
+    id: string;
+    name: string;
 }
 
 interface CategoryManagementProps {
@@ -19,22 +25,27 @@ interface CategoryManagementProps {
 
 export default function CategoryManagement({ onClose }: CategoryManagementProps) {
     const [categories, setCategories] = useState<Category[]>([]);
+    const [branchesList, setBranchesList] = useState<Branch[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
 
     const categoryForm = useCategoryForm();
 
     useEffect(() => {
-        loadCategories();
+        loadData();
     }, []);
 
-    const loadCategories = async () => {
+    const loadData = async () => {
         try {
-            const response = await menus.getCategories();
-            setCategories(response.data);
+            const [categoriesRes, branchesRes] = await Promise.all([
+                menus.getCategories(),
+                branches.getAll(),
+            ]);
+            setCategories(categoriesRes.data);
+            setBranchesList(branchesRes.data);
         } catch (error) {
-            console.error('Failed to load categories:', error);
-            alert('Failed to load categories');
+            console.error('Failed to load data:', error);
+            alert('Failed to load data');
         } finally {
             setLoading(false);
         }
@@ -44,7 +55,7 @@ export default function CategoryManagement({ onClose }: CategoryManagementProps)
         e.preventDefault();
         await categoryForm.handleSubmit(() => {
             setShowModal(false);
-            loadCategories();
+            loadData();
         });
     };
 
@@ -59,7 +70,7 @@ export default function CategoryManagement({ onClose }: CategoryManagementProps)
         try {
             await menus.deleteCategory(id);
             alert('Category deleted successfully');
-            loadCategories();
+            loadData();
         } catch (error) {
             console.error('Failed to delete category:', error);
             alert('Failed to delete category');
@@ -68,6 +79,13 @@ export default function CategoryManagement({ onClose }: CategoryManagementProps)
 
     const handleAddNew = () => {
         categoryForm.resetForm();
+        // Auto-select first branch for new categories
+        if (branchesList.length > 0) {
+            categoryForm.setFormData({
+                ...categoryForm.formData,
+                branch_id: branchesList[0].id,
+            });
+        }
         setShowModal(true);
     };
 
@@ -148,6 +166,7 @@ export default function CategoryManagement({ onClose }: CategoryManagementProps)
                 show={showModal}
                 editingCategory={categoryForm.editingCategory}
                 formData={categoryForm.formData}
+                branchesList={branchesList}
                 onSubmit={handleSubmit}
                 onClose={() => {
                     setShowModal(false);

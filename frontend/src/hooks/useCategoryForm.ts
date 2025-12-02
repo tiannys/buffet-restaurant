@@ -7,12 +7,14 @@ interface Category {
     description?: string;
     sort_order: number;
     is_active: boolean;
+    branch_id?: string;
 }
 
 interface CategoryFormData {
     name: string;
     description: string;
     sort_order: string;
+    branch_id: string;
     is_active: boolean;
 }
 
@@ -21,6 +23,7 @@ export function useCategoryForm() {
         name: '',
         description: '',
         sort_order: '0',
+        branch_id: '',
         is_active: true,
     });
     const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -54,6 +57,7 @@ export function useCategoryForm() {
             name: category.name,
             description: category.description || '',
             sort_order: category.sort_order.toString(),
+            branch_id: category.branch_id || '',
             is_active: category.is_active,
         });
     };
@@ -63,6 +67,7 @@ export function useCategoryForm() {
             name: '',
             description: '',
             sort_order: '0',
+            branch_id: '',
             is_active: true,
         });
         setEditingCategory(null);
@@ -77,3 +82,4 @@ export function useCategoryForm() {
         resetForm,
     };
 }
+
