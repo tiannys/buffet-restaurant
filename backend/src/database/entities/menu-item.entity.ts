@@ -49,6 +49,12 @@ export class MenuItem {
     @Column({ default: false })
     is_out_of_stock: boolean;
 
+    @Column({ type: 'integer', nullable: true })
+    stock_quantity: number | null;
+
+    @Column({ type: 'integer', nullable: true, default: 10 })
+    low_stock_threshold: number | null;
+
     @Column({ default: true })
     is_active: boolean;
 

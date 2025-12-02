@@ -57,6 +57,19 @@ export class MenusController {
         return this.menusService.toggleStock(id, data.is_out_of_stock);
     }
 
+    @Get('low-stock')
+    @Roles('Admin', 'Staff', 'Kitchen')
+    getLowStockItems(@Query('branch_id') branchId?: string) {
+        return this.menusService.getLowStockItems(branchId);
+    }
+
+    @Patch(':id/update-stock')
+    @Roles('Admin', 'Staff', 'Kitchen')
+    updateStock(@Param('id') id: string, @Body() data: { stock_quantity: number }) {
+        return this.menusService.updateStock(id, data.stock_quantity);
+    }
+
+
 
     // Image Upload
     @Post('upload-image')
