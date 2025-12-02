@@ -9,6 +9,9 @@ interface MenuItem {
     category?: { id: string; name: string };
     image_url?: string;
     is_available: boolean;
+    is_out_of_stock: boolean;
+    stock_quantity: number | null;
+    low_stock_threshold: number | null;
     branch_id?: string;
     package_menus?: Array<{ package: { id: string; name: string } }>;
 }
@@ -21,6 +24,8 @@ interface MenuFormData {
     branch_id: string;
     image_url: string;
     is_available: boolean;
+    stock_quantity: number | null;
+    low_stock_threshold: number | null;
 }
 
 export function useMenuForm() {
@@ -32,6 +37,8 @@ export function useMenuForm() {
         branch_id: '',
         image_url: '',
         is_available: true,
+        stock_quantity: null,
+        low_stock_threshold: 10,
     });
     const [editingMenu, setEditingMenu] = useState<MenuItem | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
