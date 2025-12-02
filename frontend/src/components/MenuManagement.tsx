@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { menus, packages as packagesApi } from '@/lib/api';
+import { useMenuForm } from '@/hooks/useMenuForm';
+import MenuFormModal from '@/components/modals/MenuFormModal';
+import CategoryManagement from './CategoryManagement';
 
 interface MenuItem {
     id: string;
@@ -34,19 +37,9 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
     const [packagesList, setPackagesList] = useState<Package[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    const [editingMenu, setEditingMenu] = useState<MenuItem | null>(null);
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string>('');
-    const [uploading, setUploading] = useState(false);
+    const [showCategoryManagement, setShowCategoryManagement] = useState(false);
 
-    const [formData, setFormData] = useState({
-        name: '',
-        description: '',
-        category_id: '',
-        package_id: '',
-        image_url: '',
-        is_available: true,
-    });
+    const menuForm = useMenuForm();
 
     useEffect(() => {
         loadData();
@@ -70,89 +63,16 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
         }
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            // Validate file type
-            if (!file.type.match(/^image\/(png|jpg|jpeg)$/)) {
-                alert('Only PNG and JPG images are allowed');
-                return;
-            }
-            // Validate file size (5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                alert('File size must be less than 5MB');
-                return;
-            }
-            setImageFile(file);
-            setImagePreview(URL.createObjectURL(file));
-        }
-    };
-
-    const uploadImage = async (): Promise<string | null> => {
-        if (!imageFile) return null;
-
-        setUploading(true);
-        try {
-            const response = await menus.uploadImage(imageFile);
-            return response.data.url;
-        } catch (error) {
-            console.error('Failed to upload image:', error);
-            alert('Failed to upload image');
-            return null;
-        } finally {
-            setUploading(false);
-        }
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        try {
-            let imageUrl = formData.image_url;
-
-            // Upload image if file selected
-            if (imageFile) {
-                const uploadedUrl = await uploadImage();
-                if (uploadedUrl) {
-                    imageUrl = uploadedUrl;
-                }
-            }
-
-            const data = {
-                ...formData,
-                image_url: imageUrl,
-            };
-
-            if (editingMenu) {
-                await menus.update(editingMenu.id, data);
-                alert('Menu updated successfully');
-            } else {
-                await menus.create(data);
-                alert('Menu created successfully');
-            }
-
+        await menuForm.handleSubmit(() => {
             setShowModal(false);
-            resetForm();
             loadData();
-        } catch (error: any) {
-            console.error('Failed to save menu:', error);
-            alert(error.response?.data?.message || 'Failed to save menu');
-        }
+        });
     };
 
     const handleEdit = (menu: MenuItem) => {
-        setEditingMenu(menu);
-        setFormData({
-            name: menu.name,
-            description: menu.description,
-            category_id: menu.category_id,
-            package_id: menu.package_menus?.[0]?.package?.id || '',
-            image_url: menu.image_url || '',
-            is_available: menu.is_available,
-        });
-        if (menu.image_url) {
-            setImagePreview(menu.image_url);
-        }
+        menuForm.handleEdit(menu);
         setShowModal(true);
     };
 
@@ -179,27 +99,23 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
         }
     };
 
-    const resetForm = () => {
-        setFormData({
-            name: '',
-            description: '',
-            category_id: '',
-            package_id: '',
-            image_url: '',
-            is_available: true,
-        });
-        setEditingMenu(null);
-        setImageFile(null);
-        setImagePreview('');
+    const handleAddNew = () => {
+        menuForm.resetForm();
+        setShowModal(true);
     };
 
-    const handleAddNew = () => {
-        resetForm();
-        setShowModal(true);
+    const handleCategoryManagementClose = () => {
+        setShowCategoryManagement(false);
+        loadData(); // Reload to get updated categories
     };
 
     if (loading) {
         return <div className="text-center py-8">Loading...</div>;
+    }
+
+    // Show CategoryManagement if requested
+    if (showCategoryManagement) {
+        return <CategoryManagement onClose={handleCategoryManagementClose} />;
     }
 
     return (
@@ -208,6 +124,12 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Menu Management</h2>
                 <div className="flex gap-2">
+                    <button
+                        onClick={() => setShowCategoryManagement(true)}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                    >
+                        📁 Manage Categories
+                    </button>
                     <button
                         onClick={handleAddNew}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -264,8 +186,8 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
                                     <button
                                         onClick={() => handleToggleAvailability(menu)}
                                         className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${menu.is_available
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-red-100 text-red-800'
                                             }`}
                                     >
                                         {menu.is_available ? 'Available' : 'Unavailable'}
@@ -292,146 +214,22 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
             </div>
 
             {/* Add/Edit Modal */}
-            {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl my-8">
-                        <h3 className="text-xl font-bold mb-4">
-                            {editingMenu ? 'Edit Menu Item' : 'Add Menu Item'}
-                        </h3>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Name *</label>
-                                    <input
-                                        type="text"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        required
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Category *</label>
-                                    <select
-                                        value={formData.category_id}
-                                        onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                                        required
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                                    >
-                                        <option value="">Select Category</option>
-                                        {categories.map((cat) => (
-                                            <option key={cat.id} value={cat.id}>
-                                                {cat.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Description</label>
-                                <textarea
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    rows={3}
-                                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">
-                                    Package * <span className="text-xs text-gray-500">(Menu will appear in this package and higher tiers)</span>
-                                </label>
-                                <select
-                                    value={formData.package_id}
-                                    onChange={(e) => setFormData({ ...formData, package_id: e.target.value })}
-                                    required
-                                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-                                >
-                                    <option value="">Select Package</option>
-                                    {packagesList.map((pkg) => (
-                                        <option key={pkg.id} value={pkg.id}>
-                                            {pkg.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Image</label>
-
-                                {/* Image Preview */}
-                                {imagePreview && (
-                                    <div className="mb-3">
-                                        <img src={imagePreview} alt="Preview" className="h-32 w-32 object-cover rounded" />
-                                    </div>
-                                )}
-
-                                {/* Upload File */}
-                                <div className="mb-2">
-                                    <label className="block text-xs text-gray-600 mb-1">Upload Image (PNG/JPG, max 5MB)</label>
-                                    <input
-                                        type="file"
-                                        accept=".png,.jpg,.jpeg"
-                                        onChange={handleImageChange}
-                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                    />
-                                </div>
-
-                                {/* Or URL */}
-                                <div>
-                                    <label className="block text-xs text-gray-600 mb-1">Or enter image URL</label>
-                                    <input
-                                        type="url"
-                                        value={formData.image_url}
-                                        onChange={(e) => {
-                                            setFormData({ ...formData, image_url: e.target.value });
-                                            if (e.target.value) {
-                                                setImagePreview(e.target.value);
-                                                setImageFile(null);
-                                            }
-                                        }}
-                                        placeholder="https://example.com/image.jpg"
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.is_available}
-                                    onChange={(e) => setFormData({ ...formData, is_available: e.target.checked })}
-                                    className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                                />
-                                <label className="ml-2 block text-sm text-gray-900">Available</label>
-                            </div>
-
-                            <div className="flex gap-4 justify-end pt-4 border-t">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setShowModal(false);
-                                        resetForm();
-                                    }}
-                                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-                                    disabled={uploading}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-                                    disabled={uploading}
-                                >
-                                    {uploading ? 'Uploading...' : editingMenu ? 'Save' : 'Add'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <MenuFormModal
+                show={showModal}
+                editingMenu={menuForm.editingMenu}
+                formData={menuForm.formData}
+                categories={categories}
+                packagesList={packagesList}
+                imagePreview={menuForm.imagePreview}
+                uploading={menuForm.uploading}
+                onSubmit={handleSubmit}
+                onClose={() => {
+                    setShowModal(false);
+                    menuForm.resetForm();
+                }}
+                onFormDataChange={menuForm.setFormData}
+                onImageChange={menuForm.handleImageChange}
+            />
         </div>
     );
 }
