@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { menus, packages as packagesApi } from '@/lib/api';
+import { menus, packages as packagesApi, branches } from '@/lib/api';
 import { useMenuForm } from '@/hooks/useMenuForm';
 import MenuFormModal from '@/components/modals/MenuFormModal';
 import CategoryManagement from './CategoryManagement';
@@ -27,6 +27,11 @@ interface Package {
     name: string;
 }
 
+interface Branch {
+    id: string;
+    name: string;
+}
+
 interface MenuManagementProps {
     onClose: () => void;
 }
@@ -35,6 +40,7 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
     const [menuList, setMenuList] = useState<MenuItem[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [packagesList, setPackagesList] = useState<Package[]>([]);
+    const [branchesList, setBranchesList] = useState<Branch[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [showCategoryManagement, setShowCategoryManagement] = useState(false);
@@ -47,14 +53,16 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
 
     const loadData = async () => {
         try {
-            const [menusRes, categoriesRes, packagesRes] = await Promise.all([
+            const [menusRes, categoriesRes, packagesRes, branchesRes] = await Promise.all([
                 menus.getAll(),
                 menus.getCategories(),
                 packagesApi.getAll(),
+                branches.getAll(),
             ]);
             setMenuList(menusRes.data);
             setCategories(categoriesRes.data);
             setPackagesList(packagesRes.data);
+            setBranchesList(branchesRes.data);
         } catch (error) {
             console.error('Failed to load data:', error);
             alert('Failed to load data');
@@ -101,6 +109,13 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
 
     const handleAddNew = () => {
         menuForm.resetForm();
+        // Auto-select first branch for new menus
+        if (branchesList.length > 0) {
+            menuForm.setFormData({
+                ...menuForm.formData,
+                branch_id: branchesList[0].id,
+            });
+        }
         setShowModal(true);
     };
 
@@ -220,6 +235,7 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
                 formData={menuForm.formData}
                 categories={categories}
                 packagesList={packagesList}
+                branchesList={branchesList}
                 imagePreview={menuForm.imagePreview}
                 uploading={menuForm.uploading}
                 onSubmit={handleSubmit}

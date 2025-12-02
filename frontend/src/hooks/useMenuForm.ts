@@ -9,6 +9,7 @@ interface MenuItem {
     category?: { id: string; name: string };
     image_url?: string;
     is_available: boolean;
+    branch_id?: string;
     package_menus?: Array<{ package: { id: string; name: string } }>;
 }
 
@@ -17,6 +18,7 @@ interface MenuFormData {
     description: string;
     category_id: string;
     package_id: string;
+    branch_id: string;
     image_url: string;
     is_available: boolean;
 }
@@ -27,6 +29,7 @@ export function useMenuForm() {
         description: '',
         category_id: '',
         package_id: '',
+        branch_id: '',
         image_url: '',
         is_available: true,
     });
@@ -109,6 +112,7 @@ export function useMenuForm() {
             description: menu.description,
             category_id: menu.category_id,
             package_id: menu.package_menus?.[0]?.package?.id || '',
+            branch_id: menu.branch_id || '',
             image_url: menu.image_url || '',
             is_available: menu.is_available,
         });
@@ -123,6 +127,7 @@ export function useMenuForm() {
             description: '',
             category_id: '',
             package_id: '',
+            branch_id: '',
             image_url: '',
             is_available: true,
         });
@@ -144,3 +149,4 @@ export function useMenuForm() {
         resetForm,
     };
 }
+

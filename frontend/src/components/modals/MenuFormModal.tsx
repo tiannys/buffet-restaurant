@@ -10,6 +10,11 @@ interface Package {
     name: string;
 }
 
+interface Branch {
+    id: string;
+    name: string;
+}
+
 interface MenuFormModalProps {
     show: boolean;
     editingMenu: any;
@@ -18,11 +23,13 @@ interface MenuFormModalProps {
         description: string;
         category_id: string;
         package_id: string;
+        branch_id: string;
         image_url: string;
         is_available: boolean;
     };
     categories: Category[];
     packagesList: Package[];
+    branchesList: Branch[];
     imagePreview: string;
     uploading: boolean;
     onSubmit: (e: React.FormEvent) => void;
@@ -37,6 +44,7 @@ export default function MenuFormModal({
     formData,
     categories,
     packagesList,
+    branchesList,
     imagePreview,
     uploading,
     onSubmit,
@@ -107,6 +115,23 @@ export default function MenuFormModal({
                             {packagesList.map((pkg) => (
                                 <option key={pkg.id} value={pkg.id}>
                                     {pkg.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Branch *</label>
+                        <select
+                            value={formData.branch_id}
+                            onChange={(e) => onFormDataChange({ ...formData, branch_id: e.target.value })}
+                            required
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                        >
+                            <option value="">Select Branch</option>
+                            {branchesList.map((branch) => (
+                                <option key={branch.id} value={branch.id}>
+                                    {branch.name}
                                 </option>
                             ))}
                         </select>
