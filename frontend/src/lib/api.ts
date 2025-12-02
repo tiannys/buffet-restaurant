@@ -98,6 +98,7 @@ export const tables = {
 export const sessions = {
     start: (data: any) => apiClient.post('/sessions/start', data),
     getActive: () => apiClient.get('/sessions/active'),
+    getOne: (id: string) => apiClient.get(`/sessions/${id}`),
     getForCustomer: (id: string) => apiClient.get(`/sessions/customer/${id}`),
     end: (id: string) => apiClient.post(`/sessions/${id}/end`),
 };
