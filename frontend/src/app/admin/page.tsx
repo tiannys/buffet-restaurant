@@ -2,10 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+
+// Dynamically import components to avoid SSR issues
+const UserManagement = dynamic(() => import("@/components/UserManagement"), { ssr: false });
+const MenuManagement = dynamic(() => import("@/components/MenuManagement"), { ssr: false });
+const CategoryManagement = dynamic(() => import("@/components/CategoryManagement"), { ssr: false });
+const PackageManagement = dynamic(() => import("@/components/PackageManagement"), { ssr: false });
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [showUserManagement, setShowUserManagement] = useState(false);
+  const [showMenuManagement, setShowMenuManagement] = useState(false);
+  const [showCategoryManagement, setShowCategoryManagement] = useState(false);
+  const [showPackageManagement, setShowPackageManagement] = useState(false);
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalTables: 0,
