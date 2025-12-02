@@ -16,42 +16,28 @@ export class OrdersService {
         private sessionsRepository: Repository<CustomerSession>,
     ) { }
 
-    async createOrder(data: {
-        session_id: string;
-        items: Array<{ menu_item_id: string; quantity: number; notes?: string }>;
-        notes?: string;
-    }) {
-        // Verify session is active
-        const session = await this.sessionsRepository.findOne({
-            where: { id: data.session_id },
-        });
-
-        if (!session || session.status !== 'active') {
-            throw new Error('Session not found or inactive');
+    async createOrder(orderData: any) {
+        // Check stock for all items
+        for (const item of orderData.items) {
+            const hasStock = await this.menusService.checkStockAvailability(
+                item.menu_item_id,
+                item.quantity
+            );
+        
+            if (!hasStock) {
+                throw new Error(`Menu item ${item.menu_item_id} is out of stock`);
+            }
         }
-
+    
         // Create order
-        const order = this.ordersRepository.create({
-            session_id: data.session_id,
-            notes: data.notes,
-            status: OrderStatus.PENDING,
-        });
-
-        const savedOrder = await this.ordersRepository.save(order);
-
-        // Create order items
-        const items = data.items.map(item =>
-            this.orderItemsRepository.create({
-                order_id: savedOrder.id,
-                menu_item_id: item.menu_item_id,
-                quantity: item.quantity,
-                notes: item.notes,
-            }),
-        );
-
-        await this.orderItemsRepository.save(items);
-
-        return this.findOne(savedOrder.id);
+        const order = await this.ordersRepository.save(orderData);
+    
+        // Decrement stock
+        for (const item of orderData.items) {
+            await this.menusService.decrementStock(item.menu_item_id, item.quantity);
+        }
+    
+        return order;
     }
 
     async findOne(id: string) {

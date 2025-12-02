@@ -104,21 +104,21 @@ export class MenusService {
 
     async checkStockAvailability(menuItemId: string, quantity: number = 1): Promise<boolean> {
         const item = await this.menuItemsRepository.findOne({ where: { id: menuItemId } });
-
+    
         if (!item) return false;
         if (item.is_out_of_stock) return false;
-        if (item.stock_quantity === null) return true; // Unlimited stock
-
+        if (item.stock_quantity === null) return true; // Unlimited
+    
         return item.stock_quantity >= quantity;
     }
 
     async decrementStock(menuItemId: string, quantity: number = 1): Promise<void> {
         const item = await this.menuItemsRepository.findOne({ where: { id: menuItemId } });
-
-        if (!item || item.stock_quantity === null) return; // Skip if unlimited
-
+    
+        if (!item || item.stock_quantity === null) return;
+    
         const newQuantity = item.stock_quantity - quantity;
-
+    
         await this.menuItemsRepository.update(menuItemId, {
             stock_quantity: Math.max(0, newQuantity),
             is_out_of_stock: newQuantity <= 0,
@@ -138,18 +138,18 @@ export class MenusService {
         });
     }
 
-    async getLowStockItems(branchId?: string) {
+
+    async getLowStockItems(branchId?: string): Promise<MenuItem[]> {
         const queryBuilder = this.menuItemsRepository
             .createQueryBuilder('item')
-            .leftJoinAndSelect('item.category', 'category')
             .where('item.stock_quantity IS NOT NULL')
-            .andWhere('item.stock_quantity <= COALESCE(item.low_stock_threshold, 10)')
+            .andWhere('item.stock_quantity <= item.low_stock_threshold')
             .andWhere('item.is_active = true');
-
+    
         if (branchId) {
             queryBuilder.andWhere('item.branch_id = :branchId', { branchId });
         }
-
+    
         return queryBuilder.getMany();
     }
 

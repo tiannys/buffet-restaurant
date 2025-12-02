@@ -129,4 +129,15 @@ export class MenusController {
     deleteCategory(@Param('id') id: string) {
         return this.menusService.deleteCategory(id);
     }
+	
+	@Get('low-stock')
+    @Roles('Admin', 'Staff', 'Kitchen')
+    getLowStockItems(@Query('branch_id') branchId?: string) {
+        return this.menusService.getLowStockItems(branchId);
+    }
+    @Patch(':id/update-stock')
+    @Roles('Admin', 'Staff', 'Kitchen')
+    updateStock(@Param('id') id: string, @Body() data: { stock_quantity: number }) {
+        return this.menusService.updateStock(id, data.stock_quantity);
+    }
 }

@@ -102,6 +102,52 @@ export default function MenuFormModal({
                     </div>
 
                     <div>
+                        <label>Stock Tracking</label>
+                        <select
+                            value={formData.stock_quantity === null ? 'unlimited' : 'tracked'}
+                            onChange={(e) => {
+                                const isUnlimited = e.target.value === 'unlimited';
+                                onFormDataChange({
+                                    ...formData,
+                                    stock_quantity: isUnlimited ? null : 0,
+                                });
+                            }}
+                        >
+                            <option value="unlimited">Unlimited (Buffet Item)</option>
+                            <option value="tracked">Track Quantity</option>
+                        </select>
+                    </div>
+                    {formData.stock_quantity !== null && (
+                        <>
+                            <div>
+                                <label>Current Stock Quantity</label>
+                                <input
+                                    type="number"
+                                    value={formData.stock_quantity || 0}
+                                    onChange={(e) => onFormDataChange({
+                                        ...formData,
+                                        stock_quantity: parseInt(e.target.value),
+                                    })}
+                                    min="0"
+                                />
+                            </div>
+
+                            <div>
+                                <label>Low Stock Alert (threshold)</label>
+                                <input
+                                    type="number"
+                                    value={formData.low_stock_threshold || 10}
+                                    onChange={(e) => onFormDataChange({
+                                        ...formData,
+                                        low_stock_threshold: parseInt(e.target.value),
+                                    })}
+                                    min="0"
+                                />
+                            </div>
+                        </>
+                    )}
+
+                    <div>
                         <label className="block text-sm font-medium text-gray-700">
                             Package * <span className="text-xs text-gray-500">(Menu will appear in this package and higher tiers)</span>
                         </label>
