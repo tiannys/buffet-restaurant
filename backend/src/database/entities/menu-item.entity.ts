@@ -46,6 +46,9 @@ export class MenuItem {
     @Column({ default: true })
     is_available: boolean;
 
+    @Column({ default: false })
+    is_out_of_stock: boolean;
+
     @Column({ default: true })
     is_active: boolean;
 

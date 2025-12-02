@@ -71,6 +71,8 @@ export const menus = {
     update: (id: string, data: any) => apiClient.put(`/menus/${id}`, data),
     delete: (id: string) => apiClient.delete(`/menus/${id}`),
     toggleAvailability: (id: string) => apiClient.patch(`/menus/${id}/toggle-availability`),
+    toggleStock: (id: string, isOutOfStock: boolean) =>
+        apiClient.patch(`/menus/${id}/toggle-stock`, { is_out_of_stock: isOutOfStock }),
     uploadImage: (file: File) => {
         const formData = new FormData();
         formData.append('image', file);

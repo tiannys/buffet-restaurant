@@ -51,6 +51,13 @@ export class MenusController {
         return this.menusService.toggleAvailability(id);
     }
 
+    @Patch(':id/toggle-stock')
+    @Roles('Admin', 'Staff', 'Kitchen')
+    toggleStock(@Param('id') id: string, @Body() data: { is_out_of_stock: boolean }) {
+        return this.menusService.toggleStock(id, data.is_out_of_stock);
+    }
+
+
     // Image Upload
     @Post('upload-image')
     @Roles('Admin')

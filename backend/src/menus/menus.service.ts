@@ -89,6 +89,20 @@ export class MenusService {
         return { message: `Menu item ${menu.is_available ? 'enabled' : 'disabled'}`, menu };
     }
 
+    async toggleStock(id: string, isOutOfStock: boolean) {
+        const menu = await this.menuItemsRepository.findOne({ where: { id } });
+        if (!menu) {
+            throw new Error('Menu item not found');
+        }
+        menu.is_out_of_stock = isOutOfStock;
+        await this.menuItemsRepository.save(menu);
+        return {
+            message: `Menu item marked as ${isOutOfStock ? 'out of stock' : 'in stock'}`,
+            menu
+        };
+    }
+
+
     // Categories
     async findAllCategories(branchId?: string) {
         const where = branchId ? { branch_id: branchId, is_active: true } : { is_active: true };

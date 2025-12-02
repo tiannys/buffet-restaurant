@@ -14,6 +14,7 @@ interface MenuItem {
     category?: { id: string; name: string };
     image_url?: string;
     is_available: boolean;
+    is_out_of_stock?: boolean;
     package_menus?: Array<{ package: { id: string; name: string } }>;
 }
 
@@ -107,6 +108,17 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
         }
     };
 
+    const handleToggleStock = async (menu: MenuItem) => {
+        try {
+            const newStockStatus = !menu.is_out_of_stock;
+            await menus.toggleStock(menu.id, newStockStatus);
+            loadData();
+        } catch (error) {
+            console.error('Failed to toggle stock:', error);
+            alert('Failed to update stock status');
+        }
+    };
+
     const handleAddNew = () => {
         menuForm.resetForm();
         // Auto-select first branch for new menus
@@ -170,6 +182,7 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Package</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                         </tr>
                     </thead>
@@ -206,6 +219,17 @@ export default function MenuManagement({ onClose }: MenuManagementProps) {
                                             }`}
                                     >
                                         {menu.is_available ? 'Available' : 'Unavailable'}
+                                    </button>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <button
+                                        onClick={() => handleToggleStock(menu)}
+                                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${menu.is_out_of_stock
+                                            ? 'bg-red-100 text-red-800'
+                                            : 'bg-green-100 text-green-800'
+                                            }`}
+                                    >
+                                        {menu.is_out_of_stock ? '🔴 Out of Stock' : '🟢 In Stock'}
                                     </button>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
