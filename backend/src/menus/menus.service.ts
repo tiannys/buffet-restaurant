@@ -21,7 +21,7 @@ export class MenusService {
         const where = branchId ? { branch_id: branchId, is_active: true } : { is_active: true };
         return this.menuItemsRepository.find({
             where,
-            relations: ['category'],
+            relations: ['category', 'package_menus', 'package_menus.package'],
             order: { sort_order: 'ASC' },
         });
     }
