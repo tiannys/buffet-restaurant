@@ -52,7 +52,25 @@ export class MenusService {
     }
 
     async updateMenu(id: string, menuData: any) {
-        await this.menuItemsRepository.update(id, menuData);
+        const { package_id, ...menuFields } = menuData;
+
+        // Update menu item fields
+        await this.menuItemsRepository.update(id, menuFields);
+
+        // Update package-menu relationship if package_id provided
+        if (package_id !== undefined) {
+            // Delete existing package-menu relationships
+            await this.packageMenusRepository.delete({ menu_item_id: id });
+
+            // Create new relationship if package_id is not empty
+            if (package_id) {
+                await this.packageMenusRepository.insert({
+                    package_id,
+                    menu_item_id: id,
+                });
+            }
+        }
+
         return this.findOneMenu(id);
     }
 
