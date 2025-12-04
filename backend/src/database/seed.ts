@@ -1,8 +1,17 @@
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Branch } from './entities/branch.entity';
+import { Role } from './entities/role.entity';
+import { User } from './entities/user.entity';
+import { MenuCategory } from './entities/menu-category.entity';
+import { MenuItem } from './entities/menu-item.entity';
+import { Package } from './entities/package.entity';
+import { PackageMenu } from './entities/package-menu.entity';
+import { Table } from './entities/table.entity';
+import { Settings } from './entities/settings.entity';
 
 // This script seeds the database with initial data
-// Run with: npm run typeorm -- migration:run -d src/database/seed.ts
+// Run with: npm run seed
 
 const AppDataSource = new DataSource({
     type: 'postgres',
@@ -11,8 +20,8 @@ const AppDataSource = new DataSource({
     username: process.env.DB_USERNAME || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
     database: process.env.DB_DATABASE || 'buffet_restaurant',
-    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    synchronize: true,
+    entities: [Branch, Role, User, MenuCategory, MenuItem, Package, PackageMenu, Table, Settings],
+    synchronize: false,
 });
 
 async function seed() {
@@ -21,7 +30,7 @@ async function seed() {
     console.log('🌱 Seeding database...');
 
     // 1. Create Branch
-    const branchRepo = AppDataSource.getRepository('Branch');
+    const branchRepo = AppDataSource.getRepository(Branch);
     let branch = await branchRepo.findOne({ where: { name: 'สาขาหลัก' } });
     if (!branch) {
         branch = await branchRepo.save({
@@ -31,10 +40,12 @@ async function seed() {
             is_active: true,
         });
         console.log('✅ Created branch');
+    } else {
+        console.log('ℹ️  Branch already exists');
     }
 
     // 2. Create Roles
-    const roleRepo = AppDataSource.getRepository('Role');
+    const roleRepo = AppDataSource.getRepository(Role);
     const roles = ['Admin', 'Staff', 'Cashier', 'Kitchen'];
     const roleMap: any = {};
 
@@ -51,7 +62,7 @@ async function seed() {
     console.log('✅ Created roles');
 
     // 3. Create Users
-    const userRepo = AppDataSource.getRepository('User');
+    const userRepo = AppDataSource.getRepository(User);
     const users = [
         { username: 'admin', password: 'admin123', full_name: 'ผู้ดูแลระบบ', role: 'Admin' },
         { username: 'staff', password: 'staff123', full_name: 'พนักงานเสิร์ฟ', role: 'Staff' },
@@ -71,12 +82,15 @@ async function seed() {
                 branch_id: branch.id,
                 is_active: true,
             });
+            console.log(`  ✅ Created user: ${userData.username}`);
+        } else {
+            console.log(`  ℹ️  User ${userData.username} already exists`);
         }
     }
     console.log('✅ Created users');
 
     // 4. Create Menu Categories
-    const categoryRepo = AppDataSource.getRepository('MenuCategory');
+    const categoryRepo = AppDataSource.getRepository(MenuCategory);
     const categories = [
         { name: 'เนื้อสัตว์', sort_order: 1 },
         { name: 'อาหารทะเล', sort_order: 2 },
@@ -88,7 +102,7 @@ async function seed() {
 
     const categoryMap: any = {};
     for (const catData of categories) {
-        let cat = await categoryRepo.findOne({ where: { name: catData.name } });
+        let cat = await categoryRepo.findOne({ where: { name: catData.name, branch_id: branch.id } });
         if (!cat) {
             cat = await categoryRepo.save({
                 ...catData,
@@ -101,7 +115,7 @@ async function seed() {
     console.log('✅ Created categories');
 
     // 5. Create Sample Menu Items
-    const menuRepo = AppDataSource.getRepository('MenuItem');
+    const menuRepo = AppDataSource.getRepository(MenuItem);
     const sampleMenus = [
         { name: 'หมูสามชั้น', category: 'เนื้อสัตว์', cost: 15 },
         { name: 'เนื้อวัว', category: 'เนื้อสัตว์', cost: 25 },
@@ -116,7 +130,7 @@ async function seed() {
 
     const menuIds: string[] = [];
     for (const menuData of sampleMenus) {
-        let menu = await menuRepo.findOne({ where: { name: menuData.name } });
+        let menu = await menuRepo.findOne({ where: { name: menuData.name, branch_id: branch.id } });
         if (!menu) {
             menu = await menuRepo.save({
                 name: menuData.name,
@@ -133,9 +147,9 @@ async function seed() {
     console.log('✅ Created sample menus');
 
     // 6. Create Packages
-    const packageRepo = AppDataSource.getRepository('Package');
+    const packageRepo = AppDataSource.getRepository(Package);
 
-    let silverPkg = await packageRepo.findOne({ where: { name: 'Silver Buffet' } });
+    let silverPkg = await packageRepo.findOne({ where: { name: 'Silver Buffet', branch_id: branch.id } });
     if (!silverPkg) {
         silverPkg = await packageRepo.save({
             name: 'Silver Buffet',
@@ -149,7 +163,7 @@ async function seed() {
         });
     }
 
-    let goldPkg = await packageRepo.findOne({ where: { name: 'Gold Buffet' } });
+    let goldPkg = await packageRepo.findOne({ where: { name: 'Gold Buffet', branch_id: branch.id } });
     if (!goldPkg) {
         goldPkg = await packageRepo.save({
             name: 'Gold Buffet',
@@ -164,7 +178,7 @@ async function seed() {
         });
     }
 
-    let platinumPkg = await packageRepo.findOne({ where: { name: 'Platinum Buffet' } });
+    let platinumPkg = await packageRepo.findOne({ where: { name: 'Platinum Buffet', branch_id: branch.id } });
     if (!platinumPkg) {
         platinumPkg = await packageRepo.save({
             name: 'Platinum Buffet',
@@ -181,7 +195,7 @@ async function seed() {
     console.log('✅ Created packages');
 
     // 7. Assign menus to packages
-    const packageMenuRepo = AppDataSource.getRepository('PackageMenu');
+    const packageMenuRepo = AppDataSource.getRepository(PackageMenu);
 
     // Assign all menus to Silver (base package)
     for (const menuId of menuIds) {
@@ -198,12 +212,13 @@ async function seed() {
     console.log('✅ Assigned menus to packages');
 
     // 8. Create Tables
-    const tableRepo = AppDataSource.getRepository('Table');
+    const tableRepo = AppDataSource.getRepository(Table);
     for (let i = 1; i <= 10; i++) {
-        const existing = await tableRepo.findOne({ where: { table_number: i.toString() } });
+        const tableNumber = i.toString();
+        const existing = await tableRepo.findOne({ where: { table_number: tableNumber, branch_id: branch.id } });
         if (!existing) {
             await tableRepo.save({
-                table_number: i.toString(),
+                table_number: tableNumber,
                 zone: i <= 5 ? 'Zone A' : 'Zone B',
                 capacity: 4,
                 status: 'available',
@@ -214,29 +229,27 @@ async function seed() {
     }
     console.log('✅ Created tables');
 
-    // 9. Create Settings
-    const settingRepo = AppDataSource.getRepository('Setting');
-    const settings = [
-        { key: 'vat_percent', value: '7', description: 'VAT percentage' },
-        { key: 'service_charge_percent', value: '10', description: 'Service charge percentage' },
-        { key: 'points_per_baht', value: '0.01', description: 'Points earned per baht spent' },
-        { key: 'baht_per_point', value: '1', description: 'Baht value per point redeemed' },
-    ];
+    // 9. Create Settings (create one default settings record)
+    const settingRepo = AppDataSource.getRepository(Settings);
+    const existingSettings = await settingRepo.find();
 
-    for (const settingData of settings) {
-        const existing = await settingRepo.findOne({ where: { key: settingData.key } });
-        if (!existing) {
-            await settingRepo.save(settingData);
-        }
+    if (existingSettings.length === 0) {
+        await settingRepo.save({
+            restaurant_name: 'ร้านบุฟเฟ่ต์',
+            vat_percent: 7.00,
+            service_charge_percent: 10.00,
+        });
+        console.log('✅ Created default settings');
+    } else {
+        console.log('ℹ️  Settings already exist');
     }
-    console.log('✅ Created settings');
 
-    console.log('🎉 Database seeding completed!');
+    console.log('\n🎉 Database seeding completed!');
     console.log('\n📝 Default credentials:');
-    console.log('  Admin: admin / admin123');
-    console.log('  Staff: staff / staff123');
-    console.log('  Cashier: cashier / cashier123');
-    console.log('  Kitchen: kitchen / kitchen123');
+    console.log('  👤 Admin: admin / admin123');
+    console.log('  👤 Staff: staff / staff123');
+    console.log('  👤 Cashier: cashier / cashier123');
+    console.log('  👤 Kitchen: kitchen / kitchen123');
 
     await AppDataSource.destroy();
 }
