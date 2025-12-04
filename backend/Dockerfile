@@ -19,6 +19,9 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# Install netcat for database healthcheck
+RUN apk add --no-cache netcat-openbsd
+
 # Copy package files
 COPY package*.json ./
 
@@ -28,11 +31,15 @@ RUN npm install --only=production
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
 
+# Copy entrypoint script
+COPY docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
+
 # Create uploads directory
 RUN mkdir -p uploads
 
 # Expose port
 EXPOSE 3000
 
-# Start application
-CMD ["node", "dist/main.js"]
+# Use entrypoint script
+ENTRYPOINT ["./docker-entrypoint.sh"]
