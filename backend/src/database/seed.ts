@@ -7,7 +7,7 @@ import { MenuCategory } from './entities/menu-category.entity';
 import { MenuItem } from './entities/menu-item.entity';
 import { Package } from './entities/package.entity';
 import { PackageMenu } from './entities/package-menu.entity';
-import { Table } from './entities/table.entity';
+import { Table, TableStatus } from './entities/table.entity';
 import { Settings } from './entities/settings.entity';
 
 // This script seeds the database with initial data
@@ -221,7 +221,7 @@ async function seed() {
                 table_number: tableNumber,
                 zone: i <= 5 ? 'Zone A' : 'Zone B',
                 capacity: 4,
-                status: 'available',
+                status: TableStatus.AVAILABLE,
                 branch_id: branch.id,
                 is_active: true,
             });
