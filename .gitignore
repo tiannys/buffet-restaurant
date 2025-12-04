@@ -41,9 +41,9 @@ yarn-error.log*
 # Docker
 postgres_data/
 
-# Uploads
-uploads/
+# Uploads (user uploaded files only, not source code)
 backend/uploads/
+frontend/public/uploads/
 
 # TypeScript
 *.tsbuildinfo
